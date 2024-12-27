@@ -124,6 +124,6 @@ class ApiService {
   }
 }
 // Создание экземпляра класса
-const apiService = new ApiService("http://90.156.169.60:8000/");
+const apiService = new ApiService("https://kredo-bet-api.vercel.app/");
 
 export default apiService;
