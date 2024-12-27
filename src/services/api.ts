@@ -5,7 +5,7 @@ import { PreviewResponse } from "../types/prewiew";
 import { PopularBetsResponse } from "../types/popularBets";
 import { predictionsResponse } from "../types/predictions";
 import { AvrrageStatisticsResponse } from "../types/aveageStatistics";
-import { Odds, OddsResponse } from "../types/odds";
+import { OddsResponse } from "../types/odds";
 class ApiService {
   private client: AxiosInstance;
 

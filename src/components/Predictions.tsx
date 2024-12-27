@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { Predict } from "../types/predictions";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { calcPrediction } from "../calculation/calcPrediction";
+// import { calcPrediction } from "../calculation/calcPrediction";
 import { Predictors } from "../types/predictors";
 import { Odds } from "../types/odds";
 import {
@@ -47,9 +47,9 @@ export const Predictions: React.FC = () => {
     (state: RootState) => state.statistics.statistics.teams
   );
 
-  const averageStatistics = useSelector(
-    (state: RootState) => state.statistics.averageStatistics
-  );
+  // const averageStatistics = useSelector(
+  //   (state: RootState) => state.statistics.averageStatistics
+  // );
 
   const onClickCalcPredictions = () => {
     // const res = calcPrediction(

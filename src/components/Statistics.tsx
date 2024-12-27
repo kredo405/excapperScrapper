@@ -7,14 +7,12 @@ import { useState, useEffect } from "react";
 import apiService from "../services/api";
 import { ErrorModal } from "./ErrorModal";
 import { Loading } from "./Loading";
-import { AvrrageStatistics } from "../types/aveageStatistics";
 import { setAverageStatistics } from "../store/slices/statistics";
 
 export const Statistics: React.FC = () => {
   const { link } = useParams<{ link: string }>();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [statistics, setStatistics] = useState<AvrrageStatistics | null>(null);
 
   const dispatch: AppDispatch = useDispatch();
 
@@ -30,8 +28,6 @@ export const Statistics: React.FC = () => {
         setIsLoading(true);
         const response = await apiService.getStatisticsAverage({ link });
         const statsData = response.averageStatistics.data;
-
-        setStatistics(statsData);
         dispatch(setAverageStatistics(statsData));
 
         console.log(statsData);

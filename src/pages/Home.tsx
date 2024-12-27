@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../components/Header";
 import { useEffect, useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Empty } from "antd";
 import { ErrorModal } from "../components/ErrorModal";
 import { Loading } from "../components/Loading";

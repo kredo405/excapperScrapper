@@ -44,10 +44,6 @@ export interface LastMatch {
   result: {
     ht: string;
     total: string;
-    1: String;
-    2: String;
-    3: String;
-    4: String;
   };
   sportSlug: string;
   teams: {

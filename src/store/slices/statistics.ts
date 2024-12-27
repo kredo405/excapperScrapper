@@ -10,7 +10,7 @@ import {
 import {
   AvrrageStatistics,
   Period,
-  MatchStatistics,
+  // MatchStatistics,
   StatisticCategory,
 } from "../../types/aveageStatistics";
 
@@ -32,8 +32,9 @@ const createEmptyTeam = (): Team => ({
 });
 
 const createEmptyLastMatch = (): LastMatch => ({
-  result: { ht: "", total: "", set1: null, set2: null, set3: null },
+  result: { ht: "", total: "" },
   teams: { home: createEmptyTeam(), away: createEmptyTeam() },
+  sportSlug: "",
 });
 
 const createEmptyAverageStats = (): Period => ({

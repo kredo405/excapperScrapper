@@ -1,7 +1,7 @@
-import { AvrrageStatistics } from "../types/aveageStatistics";
+// import { AvrrageStatistics } from "../types/aveageStatistics";
 import { Predictors } from "../types/predictors";
 import { Predict } from "../types/predictions";
-import { Outcome } from "../types/statistics";
+// import { Outcome } from "../types/statistics";
 import { Matches } from "../types/statistics";
 import { Team } from "../types/statistics";
 import { calcAvgGoals } from "./calcAvgGoals";

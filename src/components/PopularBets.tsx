@@ -1,35 +1,35 @@
-import { ErrorModal } from "./ErrorModal";
-import { Loading } from "./Loading";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { PopularBets as PopularBetsType } from "../types/popularBets";
-import { oddsFootball } from "../data/betsFootball";
+// import { ErrorModal } from "./ErrorModal";
+// import { Loading } from "./Loading";
+// import { useState } from "react";
+// import { useParams } from "react-router-dom";
+// import { PopularBets as PopularBetsType } from "../types/popularBets";
+// import { oddsFootball } from "../data/betsFootball";
 import { Predict } from "../types/predictions";
 import { Predictors } from "../types/predictors";
 import { formatBets } from "../calculation/formatBets";
 
-interface Odd {
-  type: string;
-  outcome: string;
-  scores: string[];
-  name: string;
-}
+// interface Odd {
+//   type: string;
+//   outcome: string;
+//   scores: string[];
+//   name: string;
+// }
 
-interface Odds {
-  [key: string]: {
-    [key: string]: Odd;
-  };
-}
+// interface Odds {
+//   [key: string]: {
+//     [key: string]: Odd;
+//   };
+// }
 
 interface Props {
   predictions: Predict[] | undefined;
   predictors: Predictors[] | undefined;
 }
 
-const odds: Odds = oddsFootball;
+// const odds: Odds = oddsFootball;
 
 export const PopularBets: React.FC<Props> = ({ predictions, predictors }) => {
-  const { link } = useParams<{ link: string }>();
+  // const { link } = useParams<{ link: string }>();
 
   const bestPredivtions = predictions?.map((el) => {
     const desiredPredictor = predictors?.find(
