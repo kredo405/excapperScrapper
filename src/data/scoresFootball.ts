@@ -1,0 +1,155 @@
+export const scoresMatch = {
+  // Ничья
+  "0:0": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 7.7,
+  },
+  "1:1": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 11,
+  },
+  "2:2": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 4.7,
+  },
+  "3:3": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 1,
+  },
+  // Победа 1
+  "1:0": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 10.5,
+  },
+  "2:0": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 7.3,
+  },
+  "3:0": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 4.3,
+  },
+  "2:1": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 8.5,
+  },
+  "3:1": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 4.2,
+  },
+  "3:2": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 2.5,
+  },
+  // Победа 2
+  "0:1": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 7.4,
+  },
+  "0:2": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 4.4,
+  },
+  "0:3": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 2.3,
+  },
+  "1:2": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 6.3,
+  },
+  "1:3": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 2.7,
+  },
+  "2:3": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 1.9,
+  },
+  "0:4": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.9,
+  },
+  "1:4": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.7,
+  },
+  "2:4": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.5,
+  },
+  "3:4": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.3,
+  },
+  "4:4": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.2,
+  },
+  "4:0": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.9,
+  },
+  "4:1": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.7,
+  },
+  "4:2": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.5,
+  },
+  "4:3": {
+    probability: 0,
+    quantity: 0,
+    predict: 0,
+    worldProbabilty: 0.3,
+  },
+};

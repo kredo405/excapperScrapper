@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
+  background-color: rgb(10, 33, 46);
+}
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(10, 33, 46);
+}
+
+.app {
+  height: 100%;
+}
