@@ -29,14 +29,14 @@ function dataConversion(
         awayTeam: el.teams.away.shortName,
         homeGoalsMin: homeGoalsMin,
         awayGoalsMin: awayGoalsMin,
-        homeGoalsQuarter1: +el.result["1"].split(":")[0],
-        awayGoalsQuarter1: +el.result["1"].split(":")[1],
-        homeGoalsQuarter2: +el.result["2"].split(":")[0],
-        awayGoalsQuarter2: +el.result["2"].split(":")[1],
-        homeGoalsQuarter3: +el.result["3"].split(":")[0],
-        awayGoalsQuarter3: +el.result["3"].split(":")[1],
-        homeGoalsQuarter4: +el.result["4"].split(":")[0],
-        awayGoalsQuarter4: +el.result["4"].split(":")[1],
+        // homeGoalsQuarter1: +el.result["1"].split(":")[0],
+        // awayGoalsQuarter1: +el.result["1"].split(":")[1],
+        // homeGoalsQuarter2: +el.result["2"].split(":")[0],
+        // awayGoalsQuarter2: +el.result["2"].split(":")[1],
+        // homeGoalsQuarter3: +el.result["3"].split(":")[0],
+        // awayGoalsQuarter3: +el.result["3"].split(":")[1],
+        // homeGoalsQuarter4: +el.result["4"].split(":")[0],
+        // awayGoalsQuarter4: +el.result["4"].split(":")[1],
       };
     }
     if (sportSlug === "ice-hockey") {
