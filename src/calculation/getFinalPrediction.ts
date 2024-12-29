@@ -111,7 +111,7 @@ export const getFinalPrediction = (
 
   let scoresArray;
 
-  if (sportSlug === "sofootball") {
+  if (sportSlug === "soccer") {
     scoresArray = resultsArray.slice(0, 10);
   } else if (sportSlug === "ice-hockey") {
     scoresArray = resultsArray.slice(0, 5);

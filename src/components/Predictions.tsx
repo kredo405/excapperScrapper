@@ -163,17 +163,34 @@ export const Predictions: React.FC = () => {
           </div>
           <div className="flex flex-col justify-center mt-10">
             {result ? (
-              <div className="flex items-center border-b-2 border-slate-400 mt-2 p-2">
-                <span className="text-slate-300 font-mono font-bold px-3 w-5/12">
-                  Ставка
-                </span>
-                <span className="text-slate-300 font-mono font-bold px-3 w-3/12 text-center">
-                  Кэф
-                </span>
-                <span className="text-slate-300 font-mono font-bold w-4/12 text-center">
-                  Вероятность
-                </span>
-              </div>
+              <>
+                <div className="flex space-x-4">
+                  <div className="flex items-center ">
+                    <span className="w-5 h-5 bg-red-500"></span>
+                    <span className="text-slate-200 mt-2 pl-2">
+                      - Низкая Вероятность
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="w-5 h-5 bg-lime-500"></span>
+                    <span className="text-slate-200 mt-2 pl-2">
+                      - Высокая Вероятность
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center border-b-2 border-slate-400 mt-2 p-2">
+                  <span className="text-slate-300 font-mono font-bold px-3 w-5/12">
+                    Ставка
+                  </span>
+                  <span className="text-slate-300 font-mono font-bold px-3 w-3/12 text-center">
+                    Кэф
+                  </span>
+                  <span className="text-slate-300 font-mono font-bold w-4/12 text-center">
+                    Вероятность
+                  </span>
+                </div>
+              </>
             ) : (
               ""
             )}
@@ -189,7 +206,14 @@ export const Predictions: React.FC = () => {
                       {" "}
                       {el.value}{" "}
                     </span>
-                    <span className="text-sky-500 font-mono px-3 w-4/12 text-center">
+                    {/* <span className="text-sky-500 font-mono px-3 w-4/12 text-center"> */}
+                    <span
+                      className={
+                        el.percent && el.percent >= 70
+                          ? `text-lime-500 font-mono px-3 w-4/12 text-center`
+                          : `text-red-500 font-mono px-3 w-4/12 text-center`
+                      }
+                    >
                       {" "}
                       {el.percent?.toFixed(0)}{" "}
                     </span>
