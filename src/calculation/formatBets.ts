@@ -1,7 +1,7 @@
-import { Bets } from "./calcMoncarlo";
+import { Bet } from "./getFinalPrediction";
 import { Predict } from "../types/predictions";
 
-export const formatBets = (bet: Bets | Predict) => {
+export const formatBets = (bet: Bet | Predict) => {
   const { type, outcome } = bet;
   if (type === "total_under") {
     const total = parseFloat(outcome.replace("_", "."));

@@ -27,7 +27,7 @@ const Header: React.FC = () => {
       logo: "https://img.icons8.com/?size=100&id=9820&format=png&color=209BFF",
     },
     {
-      name: "Хокей",
+      name: "Хоккей",
       link: "/hockey",
       logo: "https://img.icons8.com/?size=100&id=aM8RTSMfO2Hc&format=png&color=000000",
     },

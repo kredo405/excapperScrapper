@@ -7,6 +7,8 @@ import { useParams } from "react-router-dom";
 import { Predict } from "../types/predictions";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { Bets } from "../calculation/calcMoncarlo";
+import { Bet } from "../calculation/getFinalPrediction";
 // import { calcPrediction } from "../calculation/calcPrediction";
 import { Predictors } from "../types/predictors";
 import { Odds } from "../types/odds";
@@ -20,24 +22,24 @@ import { firestore } from "../services/firebase";
 import { calcPredictionsCollective } from "../calculation/calcPredictionsCollective";
 
 interface Result {
-  name:
-    | {
-        name: string;
-        shortName: string;
-      }
-    | undefined;
-  odd: number | undefined;
+  bets: Bet[];
+  scores: {
+    probability: number;
+    quantity: number;
+    bets: Bets[];
+    score: string;
+  }[];
 }
 
 export const Predictions: React.FC = () => {
   const { link } = useParams<{ link: string }>();
   console.log(link);
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [predictions, setPredictions] = useState<Predict[]>();
   const [predictors, setPredictors] = useState<Predictors[]>();
   const [odds, setOdds] = useState<Odds>();
-  const [result, setResult] = useState<Result[]>([]);
+  const [result, setResult] = useState<Result>();
+  const [loadingCount, setLoadingCount] = useState(0);
 
   const lastMatchesData = useSelector(
     (state: RootState) => state.statistics.statistics.matches
@@ -74,22 +76,19 @@ export const Predictions: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true);
+        setLoadingCount((count) => count + 1); // Начинаем загрузку
 
-        // Получаем первый ответ для получения total
+        // Получаем прогнозы и коэффициенты
         const firstResponse = await apiService.getPredictions({
           link: link,
           limit: 15,
           offset: 0,
         });
 
-        const total = firstResponse.predictions.meta.total; // общее количество записей
+        const total = firstResponse.predictions.meta.total;
         const limit = 15;
-
-        // Считаем, сколько запросов нужно сделать
         const totalRequests = Math.ceil(total / limit);
 
-        // Создаем массив промисов для всех запросов
         const requests = Array.from({ length: totalRequests }, (_, index) =>
           apiService.getPredictions({
             link: link,
@@ -98,10 +97,8 @@ export const Predictions: React.FC = () => {
           })
         );
 
-        // Выполняем все запросы параллельно
         const responses = await Promise.all(requests);
 
-        // Собираем данные из всех ответов
         const allPredictions = responses.flatMap(
           (response) => response.predictions.data.predictions
         );
@@ -111,11 +108,10 @@ export const Predictions: React.FC = () => {
 
         setPredictions(allPredictions);
         setOdds(odds);
-        console.log(odds);
       } catch (error) {
         ErrorModal(`Failed to fetch matches: ${error}`);
       } finally {
-        setIsLoading(false);
+        setLoadingCount((count) => count - 1); // Завершаем загрузку
       }
     };
 
@@ -125,36 +121,32 @@ export const Predictions: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true);
+        setLoadingCount((count) => count + 1); // Начинаем загрузку
+
         const querySnapshot = await getDocs(
           collection(firestore, "predictors")
         );
         const items: Predictors[] = querySnapshot.docs.map(
-          (doc: QueryDocumentSnapshot<DocumentData>) => {
-            const data = doc.data() as Omit<Predictors, "id">; // Приведение данных к ожидаемому типу
-            return {
-              id: doc.id,
-              ...data,
-            };
-          }
+          (doc: QueryDocumentSnapshot<DocumentData>) => ({
+            id: doc.id,
+            ...(doc.data() as Omit<Predictors, "id">),
+          })
         );
-        console.log(items);
+
         setPredictors(items);
       } catch (error) {
         console.error("Ошибка получения данных:", error);
       } finally {
-        setIsLoading(false);
+        setLoadingCount((count) => count - 1); // Завершаем загрузку
       }
     };
 
     fetchData();
   }, []);
 
-  console.log(predictions);
-
   return (
     <>
-      {isLoading ? (
+      {loadingCount > 0 ? (
         <Loading />
       ) : (
         <div className="px-2 md:px-44">
@@ -169,26 +161,73 @@ export const Predictions: React.FC = () => {
               Рассчитать прогноз
             </button>
           </div>
-          <div className="flex justify-center mt-10">
+          <div className="flex flex-col justify-center mt-10">
+            {result ? (
+              <div className="flex items-center border-b-2 border-slate-400 mt-2 p-2">
+                <span className="text-slate-300 font-mono font-bold px-3 w-5/12">
+                  Ставка
+                </span>
+                <span className="text-slate-300 font-mono font-bold px-3 w-3/12 text-center">
+                  Кэф
+                </span>
+                <span className="text-slate-300 font-mono font-bold w-4/12 text-center">
+                  Вероятность
+                </span>
+              </div>
+            ) : (
+              ""
+            )}
             <div>
-              {result.length > 0 ? (
-                result.map((el) => {
-                  return (
-                    <div className="flex rounded-xl bg-slate-700 mt-3 p-3">
-                      <span className="text-slate-200 font-mono px-3">
-                        {" "}
-                        {el.name?.name}{" "}
-                      </span>
-                      <span className="text-orange-600 font-mono">
-                        {" "}
-                        {el.odd}{" "}
-                      </span>
-                    </div>
-                  );
-                })
-              ) : (
-                <div></div>
-              )}
+              {result?.bets.map((el) => {
+                return (
+                  <div className="flex rounded-xl items-center bg-slate-700 mt-2 p-2">
+                    <span className="text-slate-200 font-mono px-3 w-5/12">
+                      {" "}
+                      {el.name?.name}{" "}
+                    </span>
+                    <span className="text-orange-500 font-mono px-3 w-3/12 text-center">
+                      {" "}
+                      {el.value}{" "}
+                    </span>
+                    <span className="text-sky-500 font-mono px-3 w-4/12 text-center">
+                      {" "}
+                      {el.percent?.toFixed(0)}{" "}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            {result ? (
+              <div className="flex items-center border-b-2 border-slate-400 mt-5 p-2">
+                <span className="text-slate-300 font-mono font-bold px-3 w-5/12">
+                  Счет
+                </span>
+                <span className="text-slate-300 font-mono font-bold px-3 w-4/12 text-center">
+                  Вероятность
+                </span>
+                <span className="text-slate-300 font-mono font-bold w-3/12 text-center">
+                  Вес
+                </span>
+              </div>
+            ) : (
+              ""
+            )}
+            <div>
+              {result?.scores?.map((el) => {
+                return (
+                  <div className="flex rounded-xl bg-slate-700 mt-3 p-3">
+                    <span className="text-slate-200 font-mono px-3 w-5/12">
+                      {el.score}{" "}
+                    </span>
+                    <span className="text-orange-500 font-mono px-3 w-3/12 text-center">
+                      {el.probability.toFixed(1)}{" "}
+                    </span>
+                    <span className="text-sky-500 font-mono px-3 w-4/12 text-center">
+                      {el.quantity.toFixed(0)}{" "}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

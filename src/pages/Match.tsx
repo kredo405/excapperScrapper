@@ -57,21 +57,19 @@ const Match: React.FC = () => {
 
   // Рендер логотипов
   const renderTeamLogo = (team: Team) => (
-    <div className="flex items-center justify-center flex-col">
+    <div className="flex items-center justify-center flex-col mx-3 w-[160px]">
       <img
-        className="w-32 h-32"
+        className="w-[80px] h-[80px]"
         src={`https://cdn.stavka.tv${team.logo}`}
         alt={`${team.shortName} logo`}
       />
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 mt-3">
         <img
           className="w-3 h-3"
           src={`https://cdn.stavka.tv${team.country.logo}`}
           alt={`${team.shortName} flag`}
         />
-        <span className="font-semibold text-slate-200 text-lg">
-          {team.shortName}
-        </span>
+        <span className="font-semibold text-slate-200">{team.shortName}</span>
       </div>
     </div>
   );
@@ -84,19 +82,20 @@ const Match: React.FC = () => {
       ) : (
         <div className="mt-10">
           {/* Рендер команд */}
-          <div className="flex items-center justify-evenly">
+          <div className="flex items-center justify-between">
             {statistics && renderTeamLogo(statistics.teams.home)}
-            <img
+            {/* <img
               src="https://img.icons8.com/?size=100&id=MFUoiKPaq30B&format=png&color=756646"
               alt="versus"
-            />
+            /> */}
+            <span className="text-slate-300 text-2xl font-bold">:</span>
             {statistics && renderTeamLogo(statistics.teams.away)}
           </div>
 
           {/* Навигация */}
           <div className="mt-10 w-full">
             <nav className="flex items-center justify-center">
-              <ul className="flex items-center gap-4">
+              <ul className="flex items-center gap-4 px-2">
                 {["", "statistics", "predictions"].map((path) => (
                   <li key={path}>
                     <Link

@@ -53,7 +53,7 @@ export const calcPredictionsCollective = (
     limit,
     sportSlug
   );
-
+  console.log("средние голы");
   console.log(avgGoalsHome);
   console.log(avgGoalsAway);
 
@@ -62,6 +62,10 @@ export const calcPredictionsCollective = (
   const individualTotalAway =
     (avgGoalsAway.avgGoalsFor + avgGoalsHome.avgGoalsAgainst) / 2;
 
+  console.log("Индивидуальные тоталы");
+  console.log(individualTotalHome);
+  console.log(individualTotalAway);
+
   const probabilitiesMain = monteCarloScoreSimulation(
     individualTotalHome,
     individualTotalAway,
@@ -69,16 +73,18 @@ export const calcPredictionsCollective = (
     limit,
     100000
   );
+  console.log("Вероятности монтекарло");
+  console.log(probabilitiesMain);
 
   const scoresProbabilites = calcQuantityScoresWithPredictions(
     predictions,
     predictors,
     probabilitiesMain
   );
-
+  console.log("Вероятности счетов");
   console.log(scoresProbabilites);
 
-  const result = getFinalPrediction(scoresProbabilites, odds);
+  const result = getFinalPrediction(scoresProbabilites, odds, sportSlug);
 
   return result;
 };

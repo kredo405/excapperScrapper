@@ -31,18 +31,20 @@ interface Props {
 export const PopularBets: React.FC<Props> = ({ predictions, predictors }) => {
   // const { link } = useParams<{ link: string }>();
 
-  const bestPredivtions = predictions?.map((el) => {
-    const desiredPredictor = predictors?.find(
-      (item) => item.id === el.predictor.predictorId
-    );
-    const name = formatBets(el);
+  const bestPredivtions = predictions
+    ?.map((el) => {
+      const desiredPredictor = predictors?.find(
+        (item) => item.id === el.predictor.predictorId
+      );
+      const name = formatBets(el);
 
-    return {
-      ...el,
-      roi: desiredPredictor?.roi,
-      name: name?.shortName ? name?.shortName : `${el.type} ${el.outcome}`,
-    };
-  });
+      return {
+        ...el,
+        roi: desiredPredictor?.roi,
+        name: name?.shortName ? name?.shortName : "",
+      };
+    })
+    .filter((el) => el.name !== "");
   const bestPredivtionsSorted = bestPredivtions
     ?.sort((a, b) => (a.roi && b.roi ? b.roi - a.roi : 0))
     .slice(0, 5);
@@ -74,7 +76,7 @@ export const PopularBets: React.FC<Props> = ({ predictions, predictors }) => {
               </svg>
             </div>
             <span className="text-slate-200 px-2">
-              {prediction.roi ? prediction.roi.toFixed(1) : 0}%
+              {prediction.roi ? prediction.roi.toFixed(0) : 0}
             </span>
           </span>
           <span className="text-red-200 text-lg font-bold px-1 w-3/12 flex">

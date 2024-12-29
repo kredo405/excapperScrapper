@@ -15,11 +15,15 @@ class ApiService {
     });
   }
 
+  // Статус upcoming - не начались
+  // Статус ended - Закончились
+
   // Метод для получения списка матчей
   async getMatchesPrematch(params: {
     limit: number;
     dateFrom: string;
     dateTo: string;
+    status: "upcoming" | "ended";
     sport: string;
   }): Promise<MatchesResponse> {
     try {

@@ -11,9 +11,85 @@ interface Probabilites {
   };
 }
 
+interface InputObject {
+  [key: string]: any;
+}
+
+interface ResultObject {
+  type: string;
+  outcome: string;
+  value: number;
+}
+
+export interface Bet {
+  type: string;
+  outcome: string;
+  value: number;
+  percent?: number;
+  name?: {
+    name: string;
+    shortName: string;
+  }; // Поле для хранения процента подходящих счетов
+}
+
+interface Score {
+  score: string;
+  probability: number;
+  quantity: number;
+}
+
+function calculateBetMatchPercentage(bets: Bet[], scores: Score[]): Bet[] {
+  return bets.map((bet) => {
+    let matchingScores = 0;
+
+    for (const score of scores) {
+      const [homeGoals, awayGoals] = score.score.split(":").map(Number);
+      if (
+        isScoreMatchingPrediction(bet.type, bet.outcome, homeGoals, awayGoals)
+      ) {
+        matchingScores++;
+      }
+    }
+
+    const percent = (matchingScores / scores.length) * 100;
+    return { ...bet, percent: Math.round(percent), name: formatBets(bet) }; // Округляем процент до целого
+  });
+}
+
+function convertObjectToArray(data: InputObject | undefined): ResultObject[] {
+  const result: ResultObject[] = [];
+
+  // Рекурсивная функция для обработки каждого уровня объекта
+  function processObject(obj: InputObject | undefined): void {
+    for (const key in obj) {
+      const value = obj[key];
+      if (
+        typeof value === "object" &&
+        value !== null &&
+        !Array.isArray(value)
+      ) {
+        if (value.type && value.outcome && value.value) {
+          result.push({
+            type: value.type,
+            outcome: value.outcome,
+            value: value.value,
+          });
+        } else {
+          processObject(value);
+        }
+      }
+    }
+  }
+
+  processObject(data);
+
+  return result;
+}
+
 export const getFinalPrediction = (
   data: Probabilites,
-  odds: Odds | undefined
+  odds: Odds | undefined,
+  sportSlug: string
 ) => {
   // 1. Преобразование объекта в массив объектов для сортировки
   const resultsArray = Object.entries(data).map(([score, values]) => ({
@@ -22,76 +98,35 @@ export const getFinalPrediction = (
   }));
 
   // 2. Сортировка массива по quantity (убыванию)
-  resultsArray.sort((a, b) => b.quantity - a.quantity);
-  const finalScores = resultsArray.slice(0, 5).map((el) => {
-    const { bets } = el;
-
-    const newBets = bets.map((item) => {
-      const odd = odds?.[item.type]?.[item.outcome]?.value;
-      const name = formatBets(item);
-      return {
-        ...item,
-        odd: odd,
-        name: name,
-      };
-    });
-
-    const newBetsFilter = newBets.filter((el) => el.count > 1);
-
-    newBetsFilter.sort((a, b) => b.roi - a.roi);
-
-    return { ...el, bets: newBetsFilter.slice(0, 3) };
-  });
-
-  const predictions = finalScores
-    .map((el) => {
-      return el.bets;
-    })
-    .flat()
-    .filter((el) => el.odd !== undefined && el.odd >= 1.5);
-
-  const uniqueData = Array.from(
-    new Map(
-      predictions.map((item) => [`${item.type}:${item.outcome}`, item])
-    ).values()
-  );
-
-  const unquePredictionSorted = uniqueData
-    .sort((a, b) => b.roi - a.roi)
-    .slice(0, 3);
+  resultsArray.sort((a, b) => b.quantity - a.quantity).slice(0, 10);
 
   console.log(resultsArray);
+  // console.log(odds);
 
-  console.log(unquePredictionSorted);
+  const arrayOdds = convertObjectToArray(odds);
 
-  const result = unquePredictionSorted.map((prediction) => {
-    const matchingScores = resultsArray.slice(0, 15).filter((score) => {
-      const [homeGoals, awayGoals] = score.score.split(":").map(Number);
-      if (
-        isScoreMatchingPrediction(
-          prediction.type,
-          prediction.outcome,
-          homeGoals,
-          awayGoals
-        )
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    const percentage = (matchingScores.length / 15) * 100;
+  console.log(arrayOdds);
 
-    return {
-      ...prediction,
-      matchingPercentage: percentage.toFixed(2), // Процент подходящих счетов
-    };
-  });
+  // const [homeGoals, awayGoals] = score.split(":").map(Number);
 
-  const resultSorted = result
-    .sort((a, b) => +b.matchingPercentage - +a.matchingPercentage)
-    .slice(0, 2);
-  console.log(resultSorted);
+  let scoresArray;
 
-  return resultSorted;
+  if (sportSlug === "sofootball") {
+    scoresArray = resultsArray.slice(0, 10);
+  } else if (sportSlug === "ice-hockey") {
+    scoresArray = resultsArray.slice(0, 5);
+  } else {
+    scoresArray = resultsArray.slice(0, 30);
+  }
+
+  const result = calculateBetMatchPercentage(arrayOdds, scoresArray)
+    .filter((el) => (el.value >= 1.6 && el.percent ? el.percent > 40 : false))
+    .sort((a, b) => (a.percent && b.percent ? b.percent - a.percent : 0))
+    .slice(0, 7);
+  console.log(result);
+
+  return {
+    bets: result.slice(0, 3),
+    scores: resultsArray.slice(0, 10),
+  };
 };

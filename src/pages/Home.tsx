@@ -27,6 +27,7 @@ const Home: React.FC = () => {
           limit: 150,
           dateFrom: getCurrentDate(),
           dateTo: getNextDate(),
+          status: "upcoming",
           sport: getSportQuery(sport),
         });
         console.log(response.matches.data);
