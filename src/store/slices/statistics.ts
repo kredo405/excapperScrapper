@@ -29,6 +29,7 @@ const createEmptyTeam = (): Team => ({
   logo: "",
   shortName: "",
   country: { logo: "", name: "" },
+  slug: "",
 });
 
 const createEmptyLastMatch = (): LastMatch => ({

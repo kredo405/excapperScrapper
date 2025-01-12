@@ -47,13 +47,13 @@ export const MatchItem = ({ match, idx }: { match: Match; idx: number }) => {
         </div>
         <div className="flex flex-col md:flex-row justify-end items-end w-2/12">
           <span className="text-xs md:text-base lg:text-lg lg:font-bold px-1 lg:px-2 font-mono text-green-200">
-            {match.odds.one_x_two.w1.value}
+            {match.odds?.one_x_two.w1.value}
           </span>
           <span className="text-xs md:text-base lg:text-lg lg:font-bold px-1 lg:px-2 font-mono text-cyan-200">
-            {match.odds.one_x_two.x ? match.odds.one_x_two.x.value : ""}
+            {match.odds?.one_x_two.x ? match.odds?.one_x_two.x.value : ""}
           </span>
           <span className="text-xs md:text-base lg:text-lg lg:font-bold px-1 lg:px-2 font-mono text-amber-200">
-            {match.odds.one_x_two.w2.value}
+            {match.odds?.one_x_two.w2.value}
           </span>
         </div>
       </Link>
