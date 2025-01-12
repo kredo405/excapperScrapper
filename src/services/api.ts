@@ -5,6 +5,7 @@ import { PreviewResponse } from "../types/prewiew";
 import { PopularBetsResponse } from "../types/popularBets";
 import { predictionsResponse } from "../types/predictions";
 import { AvrrageStatisticsResponse } from "../types/aveageStatistics";
+import { LastMatchesResponse } from "../types/matches";
 import { OddsResponse } from "../types/odds";
 class ApiService {
   private client: AxiosInstance;
@@ -29,6 +30,23 @@ class ApiService {
     try {
       const response = await this.client.get<MatchesResponse>(
         "stavkatv/matches/",
+        { params }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching matches:", error);
+      throw error; // Пробрасываем ошибку для обработки в try...catch
+    }
+  }
+
+  async getLastMatches(params: {
+    sport: string | undefined;
+    slug: string;
+    offset: number;
+  }): Promise<LastMatchesResponse> {
+    try {
+      const response = await this.client.get<LastMatchesResponse>(
+        "stavkatv/last-matches/",
         { params }
       );
       return response.data;

@@ -1,70 +1,56 @@
-// import { AvrrageStatistics } from "../types/aveageStatistics";
 import { Predictors } from "../types/predictors";
 import { Predict } from "../types/predictions";
-// import { Outcome } from "../types/statistics";
-import { Matches } from "../types/statistics";
 import { Team } from "../types/statistics";
 import { calcAvgGoals } from "./calcAvgGoals";
 import { monteCarloScoreSimulation } from "./calcMoncarlo";
 import { calcQuantityScoresWithPredictions } from "./calcQuantityScoresWithPredictions";
 import { getFinalPrediction } from "./getFinalPrediction";
+import { Match } from "../types/matches";
 import { Odds } from "../types/odds";
 
-function calcLimit(sportSlug: string) {
+export function calcLimit(sportSlug: string) {
   if (sportSlug === "ice-Hockey") {
-    return 10;
+    return 6;
   } else if (sportSlug === "soccer") {
-    return 5;
+    return 3;
   } else if (sportSlug === "basketball") {
-    return 140;
+    return 130;
   }
 }
 
 export const calcPredictionsCollective = (
-  matches: Matches,
+  matchesHome: Match[] | undefined,
+  matchesAway: Match[] | undefined,
   teams: { home: Team; away: Team },
   predictors: Predictors[] | undefined,
   predictions: Predict[] | undefined,
-  odds: Odds | undefined
+  odds: Odds | undefined,
+  value: number
 ) => {
-  // const data: Outcome[] = [];
-  console.log(matches);
-
-  const sportSlug = matches.pastHome[0].sportSlug;
-
-  console.log(sportSlug);
+  const sportSlug = matchesHome ? matchesHome[0].sportSlug : "";
 
   const homeTeamName = teams.home.shortName;
   const awayTeamName = teams.away.shortName;
 
   const limit = calcLimit(sportSlug);
 
-  console.log(matches.pastHome, matches.pastAway);
-
   const avgGoalsHome = calcAvgGoals(
-    matches.pastHome,
+    matchesHome,
     homeTeamName,
     limit,
     sportSlug
   );
   const avgGoalsAway = calcAvgGoals(
-    matches.pastAway,
+    matchesAway,
     awayTeamName,
     limit,
     sportSlug
   );
-  console.log("средние голы");
-  console.log(avgGoalsHome);
-  console.log(avgGoalsAway);
 
   const individualTotalHome =
     (avgGoalsHome.avgGoalsFor + avgGoalsAway.avgGoalsAgainst) / 2;
   const individualTotalAway =
     (avgGoalsAway.avgGoalsFor + avgGoalsHome.avgGoalsAgainst) / 2;
-
-  console.log("Индивидуальные тоталы");
-  console.log(individualTotalHome);
-  console.log(individualTotalAway);
 
   const probabilitiesMain = monteCarloScoreSimulation(
     individualTotalHome,
@@ -73,18 +59,50 @@ export const calcPredictionsCollective = (
     limit,
     100000
   );
-  console.log("Вероятности монтекарло");
-  console.log(probabilitiesMain);
+
+  const newPredictions = predictions?.map((el) => {
+    const desiredPredictor = predictors?.find(
+      (item) => item.id === el.predictor.predictorId
+    );
+
+    if (desiredPredictor) {
+      return {
+        ...el,
+        predictorInfo: desiredPredictor,
+      };
+    }
+  });
+
+  const newPredictionsFiltered = newPredictions
+    ?.filter(
+      (el) =>
+        el !== null && el !== undefined && el.predictorInfo.result >= 50000
+    )
+    .sort((a, b) =>
+      b?.predictorInfo && a?.predictorInfo
+        ? b?.predictorInfo.result - a?.predictorInfo.result
+        : 1
+    );
+
+  const predictionsWitchCategory: { [key: string]: any[] } = {}; // Лучше явно указать тип массива
+
+  newPredictionsFiltered?.forEach((el) => {
+    const outcomeKey = el?.type ? el.type : "";
+
+    if (predictionsWitchCategory.hasOwnProperty(outcomeKey)) {
+      predictionsWitchCategory[outcomeKey].push(el);
+    } else {
+      predictionsWitchCategory[outcomeKey] = [el];
+    }
+  });
 
   const scoresProbabilites = calcQuantityScoresWithPredictions(
     predictions,
     predictors,
     probabilitiesMain
   );
-  console.log("Вероятности счетов");
-  console.log(scoresProbabilites);
 
-  const result = getFinalPrediction(scoresProbabilites, odds, sportSlug);
+  const result = getFinalPrediction(scoresProbabilites, odds, sportSlug, value);
 
   return result;
 };

@@ -56,11 +56,11 @@ function calculateBetMatchPercentage(
     let countFirstScores;
 
     if (sportSlug === "soccer") {
-      countFirstScores = 4;
+      countFirstScores = 3;
     } else if (sportSlug === "ice-hockey") {
-      countFirstScores = 7;
+      countFirstScores = 5;
     } else {
-      countFirstScores = 60;
+      countFirstScores = 1500;
     }
 
     const scoresFiltered = scores
@@ -98,17 +98,6 @@ function calculateBetMatchPercentage(
     // Округляем процент и добавляем имя
     return { ...bet, percent: Math.round(percent), name: formatBets(bet) };
   });
-
-  const uniqueTypes = new Set();
-
-  // 2. Filter bets while keeping track of processed types
-  return bets.filter((bet) => {
-    if (!uniqueTypes.has(bet.type)) {
-      uniqueTypes.add(bet.type);
-      return true;
-    }
-    return false;
-  });
 }
 
 function convertObjectToArray(data: InputObject | undefined): ResultObject[] {
@@ -144,7 +133,8 @@ function convertObjectToArray(data: InputObject | undefined): ResultObject[] {
 export const getFinalPrediction = (
   data: Probabilites,
   odds: Odds | undefined,
-  sportSlug: string
+  sportSlug: string,
+  value: number
 ) => {
   // 1. Преобразование объекта в массив объектов для сортировки
   const resultsArray = Object.entries(data).map(([score, values]) => ({
@@ -153,16 +143,9 @@ export const getFinalPrediction = (
   }));
 
   // 2. Сортировка массива по quantity (убыванию)
-  resultsArray.sort((a, b) => b.quantity - a.quantity).slice(0, 10);
-
-  console.log(resultsArray);
-  // console.log(odds);
+  resultsArray.sort((a, b) => b.quantity - a.quantity);
 
   const arrayOdds = convertObjectToArray(odds);
-
-  console.log(arrayOdds);
-
-  // const [homeGoals, awayGoals] = score.split(":").map(Number);
 
   let scoresArray;
 
@@ -171,14 +154,13 @@ export const getFinalPrediction = (
   } else if (sportSlug === "ice-hockey") {
     scoresArray = resultsArray.slice(0, 15);
   } else {
-    scoresArray = resultsArray.slice(0, 100);
+    scoresArray = resultsArray.slice(0, 2000);
   }
 
   const result = calculateBetMatchPercentage(arrayOdds, scoresArray, sportSlug)
-    .filter((el) => (el.value >= 1.5 && el.percent ? el.percent > 40 : false))
+    .filter((el) => (el.value >= value && el.percent ? el.percent > 20 : false))
     .sort((a, b) => (a.percent && b.percent ? b.percent - a.percent : 0))
     .slice(0, 20);
-  console.log(result);
 
   function removeDuplicatesByType(arr: Bet[]) {
     const seenTypes = new Map();
@@ -195,10 +177,9 @@ export const getFinalPrediction = (
   }
 
   const uniqueData = removeDuplicatesByType(result);
-  console.log(uniqueData);
 
   return {
-    bets: uniqueData.slice(0, 3),
+    bets: uniqueData.slice(0, 2),
     scores: resultsArray.slice(0, 10),
   };
 };

@@ -22,6 +22,7 @@ export interface Team {
   logo: string;
   shortName: string;
   country: Country;
+  slug: string;
 }
 
 export interface LeagueTable {

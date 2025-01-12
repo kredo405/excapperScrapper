@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import linkReducer from "./slices/linkSlice";
 import statisticsReducer from "./slices/statistics";
+import sportReducer from "./slices/sportSlice";
 
 export const store = configureStore({
   reducer: {
     link: linkReducer,
     statistics: statisticsReducer,
+    sport: sportReducer,
   },
 });
 

@@ -7,6 +7,9 @@ import { ErrorModal } from "../components/ErrorModal";
 import { Loading } from "../components/Loading";
 import { League } from "../types/matches";
 import { getCurrentDate, getNextDate } from "../utils/date";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store/store";
+import { setCurrentSport } from "../store/slices/sportSlice";
 import { MatchItem } from "../components/MatchItem";
 import { LeagueItem } from "../components/LeagueItem";
 import apiService from "../services/api";
@@ -18,6 +21,8 @@ const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const dispatch: AppDispatch = useDispatch();
+
   useEffect(() => {
     setIsLoading(true);
     const fetchMatches = async () => {
@@ -28,14 +33,18 @@ const Home: React.FC = () => {
           dateFrom: getCurrentDate(),
           dateTo: getNextDate(),
           // dateTo: getNextDate(),
-          // dateFrom: "2024-12-29",
-          // dateTo: "2024-12-29",
+          // dateFrom: "2025-01-12",
+          // dateTo: "2025-01-12",
           // status: "ended",
           status: "upcoming",
           sport: getSportQuery(sport),
         });
         console.log(response.matches.data);
         setArrayMatches(response.matches.data ?? []);
+
+        dispatch(
+          setCurrentSport(response.matches.data[0].matches[0].sportSlug)
+        );
       } catch (error) {
         console.error("Failed to fetch matches:", error);
         ErrorModal(`Failed to fetch matches: ${error}`);
@@ -131,7 +140,7 @@ const Home: React.FC = () => {
 };
 
 // Вспомогательная функция для преобразования параметров
-const getSportQuery = (sport: string | undefined): string => {
+export const getSportQuery = (sport: string | undefined): string => {
   switch (sport) {
     case "football":
       return "sport=soccer";
