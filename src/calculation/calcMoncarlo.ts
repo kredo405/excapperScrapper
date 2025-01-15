@@ -2,6 +2,7 @@ export interface Bets {
   type: string;
   outcome: string;
   count: number;
+  roi: number;
 }
 
 export function monteCarloScoreSimulation(

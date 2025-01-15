@@ -84,7 +84,7 @@ export const calcPredictionsCollective = (
         : 1
     );
 
-  const predictionsWitchCategory: { [key: string]: any[] } = {}; // Лучше явно указать тип массива
+  const predictionsWitchCategory: { [key: string]: any[] } = {};
 
   newPredictionsFiltered?.forEach((el) => {
     const outcomeKey = el?.type ? el.type : "";
@@ -103,6 +103,8 @@ export const calcPredictionsCollective = (
   );
 
   const result = getFinalPrediction(scoresProbabilites, odds, sportSlug, value);
+
+  console.log(result);
 
   return result;
 };

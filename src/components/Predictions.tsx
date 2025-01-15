@@ -70,12 +70,14 @@ export const Predictions: React.FC = () => {
   const sport = useSelector((state: RootState) => state.sport.currentSport);
 
   const onClickCalcPredictions = () => {
-    // const resNew = calcPrediction(
+    // const resTest = calcPrediction(
     //   homeTeamLastMatches,
     //   awayTeamLastMatches,
     //   teamsData,
+    //   predictors,
     //   predictions,
-    //   predictors
+    //   odds,
+    //   value
     // );
 
     const res = calcPredictionsCollective(

@@ -1,34 +1,36 @@
-// import { scoresMatch } from "../data/scoresFootball";
-import { calcAvgGoals } from "./calcAvgGoals";
-// import { oddsFootball } from "../data/betsFootball";
-import { monteCarloScoreSimulation } from "./calcMoncarlo";
-// import { Matches } from "../types/statistics";
-import { Match } from "../types/matches";
+import { Predictors } from "../types/predictors";
+import { Predict } from "../types/predictions";
 import { Team } from "../types/statistics";
-// import { Predict } from "../types/predictions";
-// import { AvrrageStatistics } from "../types/aveageStatistics";
-// import { Predictors } from "../types/predictors";
-import { calcLimit } from "./calcPredictionsCollective";
-// import { isScoreMatchingPrediction } from "./isScoreMatchingPrediction";
-// import { Bets } from "./calcMoncarlo";
+import { calcAvgGoals } from "./calcAvgGoals";
+import { monteCarloScoreSimulation } from "./calcMoncarlo";
+import { calcQuantityScoresWithPredictions } from "./calcQuantityScoresWithPredictions";
+import { getFinalPrediction } from "./getFinalPrediction";
+import { Match } from "../types/matches";
+import { Odds } from "../types/odds";
 
-// interface Outcome {
-//   name: string;
-//   odd: number;
-//   scores: string[];
-// }
+export function calcLimit(sportSlug: string) {
+  if (sportSlug === "ice-Hockey") {
+    return 6;
+  } else if (sportSlug === "soccer") {
+    return 3;
+  } else if (sportSlug === "basketball") {
+    return 130;
+  }
+}
 
-export function calcPrediction(
+export const calcPrediction = (
   matchesHome: Match[] | undefined,
   matchesAway: Match[] | undefined,
-  teams: { home: Team; away: Team }
-  // predictions: Predict[] | undefined,
-  // predictors: Predictors[] | undefined
-) {
+  teams: { home: Team; away: Team },
+  predictors: Predictors[] | undefined,
+  predictions: Predict[] | undefined,
+  odds: Odds | undefined,
+  value: number
+) => {
+  const sportSlug = matchesHome ? matchesHome[0].sportSlug : "";
+
   const homeTeamName = teams.home.shortName;
   const awayTeamName = teams.away.shortName;
-
-  const sportSlug = matchesHome?.[0]?.sportSlug || "";
 
   const limit = calcLimit(sportSlug);
 
@@ -50,7 +52,7 @@ export function calcPrediction(
   const individualTotalAway =
     (avgGoalsAway.avgGoalsFor + avgGoalsHome.avgGoalsAgainst) / 2;
 
-  const probabilities = monteCarloScoreSimulation(
+  const probabilitiesMain = monteCarloScoreSimulation(
     individualTotalHome,
     individualTotalAway,
     limit,
@@ -58,5 +60,49 @@ export function calcPrediction(
     100000
   );
 
-  console.log(probabilities);
-}
+  const newPredictions = predictions?.map((el) => {
+    const desiredPredictor = predictors?.find(
+      (item) => item.id === el.predictor.predictorId
+    );
+
+    if (desiredPredictor) {
+      return {
+        ...el,
+        predictorInfo: desiredPredictor,
+      };
+    }
+  });
+
+  const newPredictionsFiltered = newPredictions
+    ?.filter(
+      (el) =>
+        el !== null && el !== undefined && el.predictorInfo.result >= 50000
+    )
+    .sort((a, b) =>
+      b?.predictorInfo && a?.predictorInfo
+        ? b?.predictorInfo.result - a?.predictorInfo.result
+        : 1
+    );
+
+  const predictionsWitchCategory: { [key: string]: any[] } = {}; // Лучше явно указать тип массива
+
+  newPredictionsFiltered?.forEach((el) => {
+    const outcomeKey = el?.type ? el.type : "";
+
+    if (predictionsWitchCategory.hasOwnProperty(outcomeKey)) {
+      predictionsWitchCategory[outcomeKey].push(el);
+    } else {
+      predictionsWitchCategory[outcomeKey] = [el];
+    }
+  });
+
+  const scoresProbabilites = calcQuantityScoresWithPredictions(
+    predictions,
+    predictors,
+    probabilitiesMain
+  );
+
+  const result = getFinalPrediction(scoresProbabilites, odds, sportSlug, value);
+
+  return result;
+};

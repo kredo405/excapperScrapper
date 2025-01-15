@@ -52,22 +52,18 @@ function calculateBetMatchPercentage(
 
     // Фильтруем оставшиеся элементы
     // Сортируем оставшиеся элементы по убыванию probability и берем первые 4
-
     let countFirstScores;
-
     if (sportSlug === "soccer") {
       countFirstScores = 3;
     } else if (sportSlug === "ice-hockey") {
-      countFirstScores = 5;
+      countFirstScores = 6;
     } else {
-      countFirstScores = 1500;
+      countFirstScores = 100;
     }
-
     const scoresFiltered = scores
       .slice(3)
       .sort((a, b) => b.probability - a.probability)
       .slice(0, countFirstScores);
-
     // Объединяем два массива
     const combinedScores = [
       ...new Map(
@@ -152,7 +148,7 @@ export const getFinalPrediction = (
   if (sportSlug === "soccer") {
     scoresArray = resultsArray.slice(0, 10);
   } else if (sportSlug === "ice-hockey") {
-    scoresArray = resultsArray.slice(0, 15);
+    scoresArray = resultsArray.slice(0, 20);
   } else {
     scoresArray = resultsArray.slice(0, 2000);
   }

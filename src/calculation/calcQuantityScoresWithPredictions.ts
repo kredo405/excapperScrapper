@@ -44,12 +44,10 @@ export const calcQuantityScoresWithPredictions = (
     return Math.max(0, Math.min(1, (max - rank) / (max - min)));
   };
 
-  const predictorsFiltered = predictors?.filter((el) => el.roi > -5);
-
   predictions?.forEach((prediction) => {
     const { type, outcome, predictor } = prediction;
 
-    const desiredPredictor = predictorsFiltered?.find(
+    const desiredPredictor = predictors?.find(
       (item) => item.id === predictor.predictorId
     );
 
@@ -94,7 +92,12 @@ export const calcQuantityScoresWithPredictions = (
           }
         }
         if (!betExists) {
-          newProbabilities[score].bets.push({ type, outcome, count: 1 });
+          newProbabilities[score].bets.push({
+            type,
+            outcome,
+            count: 1,
+            roi: influenceFactor,
+          });
         }
       }
     }
