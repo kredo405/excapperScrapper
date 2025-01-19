@@ -4,9 +4,9 @@ import { Team } from "../types/statistics";
 import { calcAvgGoals } from "./calcAvgGoals";
 import { monteCarloScoreSimulation } from "./calcMoncarlo";
 import { calcQuantityScoresWithPredictions } from "./calcQuantityScoresWithPredictions";
-import { getFinalPrediction } from "./getFinalPrediction";
+// import { getFinalPrediction } from "./getFinalPrediction";
 import { Match } from "../types/matches";
-import { Odds } from "../types/odds";
+// import { Odds } from "../types/odds";
 
 export function calcLimit(sportSlug: string) {
   if (sportSlug === "ice-Hockey") {
@@ -23,9 +23,9 @@ export const calcPrediction = (
   matchesAway: Match[] | undefined,
   teams: { home: Team; away: Team },
   predictors: Predictors[] | undefined,
-  predictions: Predict[] | undefined,
-  odds: Odds | undefined,
-  value: number
+  predictions: Predict[] | undefined
+  // odds: Odds | undefined,
+  // value: number
 ) => {
   const sportSlug = matchesHome ? matchesHome[0].sportSlug : "";
 
@@ -102,7 +102,9 @@ export const calcPrediction = (
     probabilitiesMain
   );
 
-  const result = getFinalPrediction(scoresProbabilites, odds, sportSlug, value);
+  console.log(scoresProbabilites);
 
-  return result;
+  // const result = getFinalPrediction(scoresProbabilites, odds, sportSlug, value);
+
+  // return result;
 };
