@@ -10,7 +10,7 @@ import { Odds } from "../types/odds";
 
 export function calcLimit(sportSlug: string) {
   if (sportSlug === "ice-Hockey") {
-    return 7;
+    return 10;
   } else if (sportSlug === "soccer") {
     return 4;
   } else if (sportSlug === "basketball") {
