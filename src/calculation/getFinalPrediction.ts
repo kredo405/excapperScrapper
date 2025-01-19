@@ -36,47 +36,18 @@ interface Score {
   score: string;
   probability: number;
   quantity: number;
+  weight: number;
 }
 
-function calculateBetMatchPercentage(
-  bets: Bet[],
-  scores: Score[],
-  sportSlug: string
-): Bet[] {
+function calculateBetMatchPercentage(bets: Bet[], scores: Score[]): Bet[] {
   return bets.map((bet) => {
     let weightedMatchingScores = 0;
     let totalWeight = 0;
 
-    // Получаем первые три элемента без изменения исходного массива
-    const firstThreeScores = scores.slice(0, 3);
-
-    // Фильтруем оставшиеся элементы
-    // Сортируем оставшиеся элементы по убыванию probability и берем первые 4
-    let countFirstScores;
-    if (sportSlug === "soccer") {
-      countFirstScores = 3;
-    } else if (sportSlug === "ice-hockey") {
-      countFirstScores = 6;
-    } else {
-      countFirstScores = 100;
-    }
-    const scoresFiltered = scores
-      .slice(3)
-      .sort((a, b) => b.probability - a.probability)
-      .slice(0, countFirstScores);
-    // Объединяем два массива
-    const combinedScores = [
-      ...new Map(
-        firstThreeScores
-          .concat(scoresFiltered)
-          .map((item) => [item.score, item])
-      ).values(),
-    ];
-
-    // Проверяем совпадение каждого score с bet и учитываем вес (quantity)
-    for (const score of combinedScores) {
+    // Проверяем совпадение каждого score с bet и учитываем вес (quantity и probability)
+    for (const score of scores) {
       const [homeGoals, awayGoals] = score.score.split(":").map(Number);
-      const weight = score.quantity;
+      const weight = score.weight;
 
       if (
         isScoreMatchingPrediction(bet.type, bet.outcome, homeGoals, awayGoals)
@@ -143,17 +114,28 @@ export const getFinalPrediction = (
 
   const arrayOdds = convertObjectToArray(odds);
 
+  const scoresNewProbabilities = resultsArray
+    .map((el) => {
+      return {
+        ...el,
+        weight: el.quantity * el.probability,
+      };
+    })
+    .sort((a, b) => b.weight - a.weight);
+
+  console.log(scoresNewProbabilities);
+
   let scoresArray;
 
   if (sportSlug === "soccer") {
-    scoresArray = resultsArray.slice(0, 10);
+    scoresArray = scoresNewProbabilities.slice(0, 7);
   } else if (sportSlug === "ice-hockey") {
-    scoresArray = resultsArray.slice(0, 20);
+    scoresArray = scoresNewProbabilities.slice(0, 15);
   } else {
-    scoresArray = resultsArray.slice(0, 2000);
+    scoresArray = scoresNewProbabilities.slice(0, 500);
   }
 
-  const result = calculateBetMatchPercentage(arrayOdds, scoresArray, sportSlug)
+  const result = calculateBetMatchPercentage(arrayOdds, scoresArray)
     .filter((el) => (el.value >= value && el.percent ? el.percent > 20 : false))
     .sort((a, b) => (a.percent && b.percent ? b.percent - a.percent : 0))
     .slice(0, 20);
@@ -176,6 +158,6 @@ export const getFinalPrediction = (
 
   return {
     bets: uniqueData.slice(0, 2),
-    scores: resultsArray.slice(0, 10),
+    scores: resultsArray,
   };
 };

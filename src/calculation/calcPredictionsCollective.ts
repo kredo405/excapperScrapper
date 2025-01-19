@@ -10,9 +10,9 @@ import { Odds } from "../types/odds";
 
 export function calcLimit(sportSlug: string) {
   if (sportSlug === "ice-Hockey") {
-    return 6;
+    return 7;
   } else if (sportSlug === "soccer") {
-    return 3;
+    return 4;
   } else if (sportSlug === "basketball") {
     return 130;
   }
@@ -101,6 +101,8 @@ export const calcPredictionsCollective = (
     predictors,
     probabilitiesMain
   );
+
+  console.log(probabilitiesMain);
 
   const result = getFinalPrediction(scoresProbabilites, odds, sportSlug, value);
 

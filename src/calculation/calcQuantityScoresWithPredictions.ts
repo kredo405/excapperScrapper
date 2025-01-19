@@ -13,7 +13,10 @@ export const calcQuantityScoresWithPredictions = (
   const newProbabilities = Object.fromEntries(
     Object.entries(probabilities).map(([score, data]) => [
       score,
-      { ...data, bets: data.bets.map((bet) => ({ ...bet })) },
+      {
+        ...data,
+        bets: JSON.parse(JSON.stringify(data.bets)), // Глубокое копирование
+      },
     ])
   );
 
@@ -38,12 +41,6 @@ export const calcQuantityScoresWithPredictions = (
     return Math.max(0, Math.min(1, (value - min) / (max - min)));
   };
 
-  const normalizeRank = (rank: number): number => {
-    const min = 1; // Самый высокий ранг
-    const max = 5000; // Самый низкий ранг
-    return Math.max(0, Math.min(1, (max - rank) / (max - min)));
-  };
-
   predictions?.forEach((prediction) => {
     const { type, outcome, predictor } = prediction;
 
@@ -53,55 +50,30 @@ export const calcQuantityScoresWithPredictions = (
 
     if (!desiredPredictor) return;
 
-    const {
-      roi = 0,
-      result = 0,
-      won = 0,
-      lose = 0,
-      position = 0,
-    } = desiredPredictor;
+    const { roi = 0, result = 0, won = 0, lose = 0 } = desiredPredictor;
 
     // Нормализация данных прогнозиста
     const normalizedROI = normalizeROI(roi);
     const normalizedProfit = normalizeProfit(result);
     const normalizedWinRate = won + lose > 0 ? won / (won + lose) : 0; // Процент выигранных ставок
-    const normalizedRank = normalizeRank(position);
 
     // Общий коэффициент влияния
     const influenceFactor =
-      0.6 * normalizedROI +
-      0.4 * normalizedProfit +
-      0.7 * normalizedWinRate +
-      0.4 * (1 - normalizedRank); // Чем ниже ранг, тем выше влияние
+      0.6 * normalizedROI + 0.4 * normalizedProfit + 0.6 * normalizedWinRate;
 
     for (const score in newProbabilities) {
       const { probability } = newProbabilities[score];
       const [homeGoals, awayGoals] = score.split(":").map(Number);
 
+      const adjustedProbability = influenceFactor;
+
       if (isScoreMatchingPrediction(type, outcome, homeGoals, awayGoals)) {
-        const adjustedProbability = probability * influenceFactor;
-
-        newProbabilities[score].quantity += adjustedProbability;
-
-        let betExists = false;
-        for (const bet of newProbabilities[score].bets) {
-          if (bet.type === type && bet.outcome === outcome) {
-            bet.count = (bet.count || 1) + 1;
-            betExists = true;
-            break;
-          }
-        }
-        if (!betExists) {
-          newProbabilities[score].bets.push({
-            type,
-            outcome,
-            count: 1,
-            roi: influenceFactor,
-          });
-        }
+        // Увеличиваем вероятность для соответствующего счета
+        newProbabilities[score].quantity += probability * adjustedProbability;
       }
     }
   });
 
+  console.log(newProbabilities);
   return newProbabilities;
 };
