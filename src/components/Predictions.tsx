@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { Predict } from "../types/predictions";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { Bets } from "../calculation/calcMoncarlo";
+// import { Bets } from "../calculation/calcMoncarlo";
 import { formatBets } from "../calculation/formatBets";
 import { Bet } from "../calculation/getFinalPrediction";
 import { Match } from "../types/matches";
@@ -265,6 +265,60 @@ export const Predictions: React.FC = () => {
                     <span className="text-slate-200 mt-2 pl-2">
                       - Высокая Вероятность
                     </span>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <div>
+                      <span className="font-bold text-orange-500">Цен. -</span>{" "}
+                      <span className="text-slate-200">
+                        Число рассчитанное программой, которое отображает
+                        качество прогноза
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-orange-500">% -</span>{" "}
+                      <span className="text-slate-200">
+                        Вероятность прогноза
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-orange-500">Вес -</span>{" "}
+                      <span className="text-slate-200">
+                        Пересенная которая отображает влияние прогнозов
+                        экспертов на итоговый прогноз
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-orange-500">ROI -</span>{" "}
+                      <span className="text-slate-200">
+                        Успешность прогнозиста
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-orange-500">$ -</span>{" "}
+                      <span className="text-slate-200">
+                        Прибыль прогнозиста
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-orange-500">В -</span>{" "}
+                      <span className="text-slate-200">
+                        Количество выигранных ставок прогнозиста
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-orange-500">П -</span>{" "}
+                      <span className="text-slate-200">
+                        Количество проигранных ставок прогнозиста
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-bold text-orange-500">Место -</span>{" "}
+                      <span className="text-slate-200">
+                        Место прогнозиста в рейтинге прогнозистов
+                      </span>
+                    </div>
                   </div>
                 </div>
               </>
