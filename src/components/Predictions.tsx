@@ -8,6 +8,7 @@ import { Predict } from "../types/predictions";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { Bets } from "../calculation/calcMoncarlo";
+import { formatBets } from "../calculation/formatBets";
 import { Bet } from "../calculation/getFinalPrediction";
 import { Match } from "../types/matches";
 import { Predictors } from "../types/predictors";
@@ -24,12 +25,6 @@ import { calcPredictionsCollective } from "../calculation/calcPredictionsCollect
 
 interface Result {
   bets: Bet[];
-  scores: {
-    probability: number;
-    quantity: number;
-    bets: Bets[];
-    score: string;
-  }[];
 }
 
 // interface LastMatches {
@@ -272,15 +267,6 @@ export const Predictions: React.FC = () => {
                     </span>
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between border-b-2 border-slate-400 mt-2 p-2">
-                  <span className="text-slate-300 font-mono font-bold px-3 w-5/12">
-                    Ставка
-                  </span>
-                  <span className="text-slate-300 font-mono font-bold px-3 w-3/12 text-center">
-                    Кэф
-                  </span>
-                </div>
               </>
             ) : (
               ""
@@ -288,47 +274,122 @@ export const Predictions: React.FC = () => {
             <div>
               {result?.bets.map((el) => {
                 return (
-                  <div className="flex justify-between rounded-xl items-center bg-slate-700 mt-2 p-2">
-                    <span className="text-slate-200 font-mono px-3 w-8/12">
-                      {" "}
-                      {el.name?.name}{" "}
-                    </span>
-                    <span className="text-orange-500 font-mono px-3 w-4/12 text-center">
-                      {" "}
-                      {el.value}{" "}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            {result ? (
-              <div className="flex items-center border-b-2 border-slate-400 mt-5 p-2">
-                <span className="text-slate-300 font-mono font-bold px-3 w-5/12">
-                  Счет
-                </span>
-                <span className="text-slate-300 font-mono font-bold px-3 w-4/12 text-center">
-                  Вероятность
-                </span>
-                <span className="text-slate-300 font-mono font-bold w-3/12 text-center">
-                  Вес
-                </span>
-              </div>
-            ) : (
-              ""
-            )}
-            <div>
-              {result?.scores?.map((el) => {
-                return (
-                  <div className="flex rounded-xl bg-slate-700 mt-3 p-3">
-                    <span className="text-slate-200 font-mono px-3 w-5/12">
-                      {el.score}{" "}
-                    </span>
-                    <span className="text-orange-500 font-mono px-3 w-3/12 text-center">
-                      {el.probability.toFixed(1)}{" "}
-                    </span>
-                    <span className="text-sky-500 font-mono px-3 w-4/12 text-center">
-                      {el.quantity.toFixed(0)}{" "}
-                    </span>
+                  <div>
+                    <div className="flex items-center justify-between mt-2 p-2">
+                      <span className="text-slate-300 font-mono font-bold px-3 w-4/12">
+                        Ставка
+                      </span>
+                      <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                        Кэф
+                      </span>
+                      <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                        Цен.
+                      </span>
+                      <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                        %
+                      </span>
+                      <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                        Вес
+                      </span>
+                    </div>
+                    <div className="flex justify-between rounded-t-xl items-center bg-slate-700 mt-2 p-2">
+                      <span className="text-slate-200 font-mono px-3 text-sm w-4/12">
+                        {" "}
+                        {el.name?.name}{" "}
+                      </span>
+                      <span className="text-orange-500 font-mono px-3 text-sm w-2/12 text-center">
+                        {" "}
+                        {el.value}{" "}
+                      </span>
+                      <span
+                        className={
+                          el.percent && el.percent >= 60
+                            ? "text-lime-500 font-mono px-3 text-sm w-2/12 text-center"
+                            : "text-red-500 font-mono px-3 text-sm w-2/12 text-center"
+                        }
+                      >
+                        {" "}
+                        {el.percent}{" "}
+                      </span>
+                      <span
+                        className={
+                          el.betProbability && el.betProbability >= 50
+                            ? "text-lime-500 font-mono px-3 text-sm w-2/12 text-center"
+                            : "text-red-500 font-mono px-3 text-sm w-2/12 text-center"
+                        }
+                      >
+                        {" "}
+                        {el.betProbability?.toFixed(0)}{" "}
+                      </span>
+                      <span className="text-sky-500 font-mono px-3 text-sm w-2/12 text-center">
+                        {" "}
+                        {el.weight?.toFixed(0)}{" "}
+                      </span>
+                    </div>
+                    <div className="bg-slate-600 rounded-b-xl">
+                      <div className="flex w-full">
+                        <div className="text-slate-200 font-bold px-2 text-sm w-4/12">
+                          прогноз
+                        </div>
+                        <div className="text-slate-200 font-bold px-2 text-center w-2/12">
+                          Roi
+                        </div>
+                        <div className="text-slate-200 font-bold px-2 text-center w-2/12">
+                          $
+                        </div>
+                        <div className="text-slate-200 font-bold px-2 text-center w-1/12">
+                          В
+                        </div>
+                        <div className="text-slate-200 font-bold px-2 text-center w-1/12">
+                          П
+                        </div>
+                        <div className="text-slate-200 font-bold px-2 text-center w-2/12">
+                          Место
+                        </div>
+                      </div>
+                      {el.predictions?.map((item) => {
+                        return (
+                          <div className="flex w-full border-b -2 border-slate-400 px-2 py-2">
+                            <div className="text-orange-500 font-bold px-2 text-sm w-4/12">
+                              {formatBets(item)?.name}
+                            </div>
+                            <div
+                              className={
+                                item.predictor && item.predictor?.roi > 0
+                                  ? "text-lime-400 px-2 text-center w-2/12 text-sm"
+                                  : "text-red-600 px-2 text-center w-2/12 text-sm"
+                              }
+                            >
+                              {item.predictor?.roi}
+                            </div>
+                            <div
+                              className={
+                                item.predictor && item.predictor?.result > 0
+                                  ? "text-lime-400 px-2 text-center w-2/12 text-sm"
+                                  : "text-red-600 px-2 text-center w-2/12 text-sm"
+                              }
+                            >
+                              {item.predictor?.result}
+                            </div>
+                            <div className="text-sky-400 px-2 text-center w-1/12 text-sm">
+                              {item.predictor?.won}
+                            </div>
+                            <div className="text-orange-400 px-2 text-center w-1/12 text-sm">
+                              {item.predictor?.lose}
+                            </div>
+                            <div
+                              className={
+                                item.predictor && item.predictor?.position < 500
+                                  ? "text-lime-300 px-2 text-center w-2/12 text-sm"
+                                  : "text-red-600 px-2 text-center w-2/12 text-sm"
+                              }
+                            >
+                              {item.predictor?.position}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}

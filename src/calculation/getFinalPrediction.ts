@@ -2,6 +2,8 @@ import { Bets } from "./calcMoncarlo";
 import { Odds } from "../types/odds";
 import { formatBets } from "./formatBets";
 import { isScoreMatchingPrediction } from "./isScoreMatchingPrediction";
+import { Predict } from "../types/predictions";
+import { Predictors } from "../types/predictors";
 
 interface Probabilites {
   [score: string]: {
@@ -9,6 +11,14 @@ interface Probabilites {
     quantity: number;
     bets: Bets[];
   };
+}
+
+export interface PredictionsInfo {
+  predictor: Predictors | undefined;
+  type: string;
+  outcome: string;
+  comment: string;
+  rate: number;
 }
 
 interface InputObject {
@@ -26,6 +36,9 @@ export interface Bet {
   outcome: string;
   value: number;
   percent?: number;
+  predictions?: PredictionsInfo[];
+  betProbability?: number;
+  weight?: number;
   name?: {
     name: string;
     shortName: string;
@@ -36,18 +49,68 @@ interface Score {
   score: string;
   probability: number;
   quantity: number;
-  weight: number;
 }
 
-function calculateBetMatchPercentage(bets: Bet[], scores: Score[]): Bet[] {
+function calculateBetMatchPercentage(
+  bets: ResultObject[],
+  scores: Score[],
+  predictions: Predict[] | undefined,
+  predictors: Predictors[] | undefined,
+  sportSlug: string
+): Bet[] {
   return bets.map((bet) => {
     let weightedMatchingScores = 0;
     let totalWeight = 0;
+    let countMatchingScores = 0;
+    let total = 0;
+    let sumWeight = 0;
 
-    // Проверяем совпадение каждого score с bet и учитываем вес (quantity и probability)
+    let scoresArray;
+
+    if (sportSlug === "soccer") {
+      scoresArray = scores.slice(0, 5);
+    } else if (sportSlug === "ice-hockey") {
+      scoresArray = scores.slice(0, 10);
+    } else {
+      scoresArray = scores.slice(0, 500);
+    }
+
     for (const score of scores) {
       const [homeGoals, awayGoals] = score.score.split(":").map(Number);
-      const weight = score.weight;
+
+      if (
+        isScoreMatchingPrediction(bet.type, bet.outcome, homeGoals, awayGoals)
+      ) {
+        countMatchingScores += score.probability; // Учитываем совпадение с весом
+        sumWeight += score.quantity;
+      }
+
+      total += score.probability; // Суммируем общий вес
+    }
+
+    const betProbability = total > 0 ? (countMatchingScores / total) * 100 : 0;
+
+    const predictionsWithBet = predictions?.filter((p) => p.type === bet.type);
+    const predictionsInfo = predictionsWithBet
+      ?.map((el) => {
+        const predictor = predictors?.find(
+          (predictor) => predictor.id === el.predictor.predictorId
+        );
+        return {
+          ...el,
+          predictor,
+        };
+      })
+      .filter((el) => (el.predictor ? el.predictor?.roi : -11 > -10))
+      .sort((a, b) =>
+        b.predictor && a.predictor ? b.predictor?.roi - a.predictor?.roi : 0
+      )
+      .slice(0, 5);
+
+    // Проверяем совпадение каждого score с bet и учитываем вес ( probability)
+    for (const score of scoresArray) {
+      const [homeGoals, awayGoals] = score.score.split(":").map(Number);
+      const weight = score.probability; // Учитываем  вероятность
 
       if (
         isScoreMatchingPrediction(bet.type, bet.outcome, homeGoals, awayGoals)
@@ -63,7 +126,14 @@ function calculateBetMatchPercentage(bets: Bet[], scores: Score[]): Bet[] {
       totalWeight > 0 ? (weightedMatchingScores / totalWeight) * 100 : 0;
 
     // Округляем процент и добавляем имя
-    return { ...bet, percent: Math.round(percent), name: formatBets(bet) };
+    return {
+      ...bet,
+      percent: Math.round(percent),
+      name: formatBets(bet),
+      predictions: predictionsInfo,
+      betProbability,
+      weight: sumWeight,
+    };
   });
 }
 
@@ -101,7 +171,9 @@ export const getFinalPrediction = (
   data: Probabilites,
   odds: Odds | undefined,
   sportSlug: string,
-  value: number
+  value: number,
+  predictions: Predict[] | undefined,
+  predictors: Predictors[] | undefined
 ) => {
   // 1. Преобразование объекта в массив объектов для сортировки
   const resultsArray = Object.entries(data).map(([score, values]) => ({
@@ -114,28 +186,13 @@ export const getFinalPrediction = (
 
   const arrayOdds = convertObjectToArray(odds);
 
-  const scoresNewProbabilities = resultsArray
-    .map((el) => {
-      return {
-        ...el,
-        weight: el.quantity * el.probability,
-      };
-    })
-    .sort((a, b) => b.weight - a.weight);
-
-  console.log(scoresNewProbabilities);
-
-  let scoresArray;
-
-  if (sportSlug === "soccer") {
-    scoresArray = scoresNewProbabilities.slice(0, 7);
-  } else if (sportSlug === "ice-hockey") {
-    scoresArray = scoresNewProbabilities.slice(0, 15);
-  } else {
-    scoresArray = scoresNewProbabilities.slice(0, 500);
-  }
-
-  const result = calculateBetMatchPercentage(arrayOdds, scoresArray)
+  const result = calculateBetMatchPercentage(
+    arrayOdds,
+    resultsArray,
+    predictions,
+    predictors,
+    sportSlug
+  )
     .filter((el) => (el.value >= value && el.percent ? el.percent > 20 : false))
     .sort((a, b) => (a.percent && b.percent ? b.percent - a.percent : 0))
     .slice(0, 20);
@@ -157,7 +214,7 @@ export const getFinalPrediction = (
   const uniqueData = removeDuplicatesByType(result);
 
   return {
-    bets: uniqueData.slice(0, 2),
-    scores: resultsArray,
+    bets: uniqueData.slice(0, 5),
+    // scores: resultsArray,
   };
 };

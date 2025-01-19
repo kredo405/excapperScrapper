@@ -104,7 +104,14 @@ export const calcPredictionsCollective = (
 
   console.log(probabilitiesMain);
 
-  const result = getFinalPrediction(scoresProbabilites, odds, sportSlug, value);
+  const result = getFinalPrediction(
+    scoresProbabilites,
+    odds,
+    sportSlug,
+    value,
+    predictions,
+    predictors
+  );
 
   console.log(result);
 

@@ -1,7 +1,8 @@
 import { Bet } from "./getFinalPrediction";
 import { Predict } from "../types/predictions";
+import { PredictionsInfo } from "./getFinalPrediction";
 
-export const formatBets = (bet: Bet | Predict) => {
+export const formatBets = (bet: Bet | Predict | PredictionsInfo) => {
   const { type, outcome } = bet;
   if (type === "total_under") {
     const total = parseFloat(outcome.replace("_", "."));
