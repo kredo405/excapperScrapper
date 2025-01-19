@@ -30,12 +30,12 @@ const Home: React.FC = () => {
         setIsLoading(true);
         const response = await apiService.getMatchesPrematch({
           limit: 150,
-          dateFrom: getCurrentDate(),
-          dateTo: getNextDate(),
-          // dateFrom: "2025-01-18",
-          // dateTo: "2025-01-18",
-          // status: "ended",
-          status: "upcoming",
+          // dateFrom: getCurrentDate(),
+          // dateTo: getNextDate(),
+          dateFrom: "2025-01-19",
+          dateTo: "2025-01-19",
+          status: "ended",
+          // status: "upcoming",
           sport: getSportQuery(sport),
         });
         console.log(response.matches.data);

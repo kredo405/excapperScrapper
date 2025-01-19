@@ -346,7 +346,7 @@ export const Predictions: React.FC = () => {
                         Вес
                       </span>
                     </div>
-                    <div className="flex justify-between rounded-t-xl items-center bg-slate-700 mt-2 p-2">
+                    <div className="flex justify-between rounded-t-xl items-center bg-slate-700 mt-2 px-2 py-5">
                       <span className="text-slate-200 font-mono px-3 text-sm w-4/12">
                         {" "}
                         {el.name?.name}{" "}
@@ -403,8 +403,8 @@ export const Predictions: React.FC = () => {
                       </div>
                       {el.predictions?.map((item) => {
                         return (
-                          <div className="flex w-full border-b -2 border-slate-400 px-2 py-2">
-                            <div className="text-orange-500 font-bold px-2 text-sm w-4/12">
+                          <div className="flex w-full border-t-2 border-slate-400 px-2 py-2">
+                            <div className="text-slate-100 px-2 text-sm w-4/12">
                               {formatBets(item)?.name}
                             </div>
                             <div
