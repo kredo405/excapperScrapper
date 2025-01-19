@@ -14,7 +14,7 @@ export function calcLimit(sportSlug: string) {
   } else if (sportSlug === "soccer") {
     return 4;
   } else if (sportSlug === "basketball") {
-    return 130;
+    return 140;
   }
 }
 
