@@ -251,80 +251,6 @@ export const Predictions: React.FC = () => {
           </div>
 
           <div className="flex flex-col justify-center mt-10">
-            {result ? (
-              <>
-                <div className="flex space-x-4">
-                  <div className="flex items-center ">
-                    <span className="w-5 h-5 bg-red-500"></span>
-                    <span className="text-slate-200 mt-2 pl-2">
-                      - Низкая Вероятность
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="w-5 h-5 bg-lime-500"></span>
-                    <span className="text-slate-200 mt-2 pl-2">
-                      - Высокая Вероятность
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <div>
-                      <span className="font-bold text-orange-500">Цен. -</span>{" "}
-                      <span className="text-slate-200">
-                        Число рассчитанное программой, которое отображает
-                        качество прогноза
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-bold text-orange-500">% -</span>{" "}
-                      <span className="text-slate-200">
-                        Вероятность прогноза
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-bold text-orange-500">Вес -</span>{" "}
-                      <span className="text-slate-200">
-                        Пересенная которая отображает влияние прогнозов
-                        экспертов на итоговый прогноз
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-bold text-orange-500">ROI -</span>{" "}
-                      <span className="text-slate-200">
-                        Успешность прогнозиста
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-bold text-orange-500">$ -</span>{" "}
-                      <span className="text-slate-200">
-                        Прибыль прогнозиста
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-bold text-orange-500">В -</span>{" "}
-                      <span className="text-slate-200">
-                        Количество выигранных ставок прогнозиста
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-bold text-orange-500">П -</span>{" "}
-                      <span className="text-slate-200">
-                        Количество проигранных ставок прогнозиста
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-bold text-orange-500">Место -</span>{" "}
-                      <span className="text-slate-200">
-                        Место прогнозиста в рейтинге прогнозистов
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              ""
-            )}
             <div>
               {result?.bets.map((el) => {
                 return (
@@ -340,13 +266,10 @@ export const Predictions: React.FC = () => {
                         Цен.
                       </span>
                       <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
-                        %
-                      </span>
-                      <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
                         Вес
                       </span>
                     </div>
-                    <div className="flex justify-between rounded-t-xl items-center bg-slate-700 mt-2 px-2 py-5">
+                    <div className="flex justify-between rounded-b-xl items-center bg-slate-700 mt-2 px-2 py-5">
                       <span className="text-slate-200 font-mono px-3 text-sm w-4/12">
                         {" "}
                         {el.name?.name}{" "}
@@ -365,22 +288,12 @@ export const Predictions: React.FC = () => {
                         {" "}
                         {el.percent}{" "}
                       </span>
-                      <span
-                        className={
-                          el.betProbability && el.betProbability >= 50
-                            ? "text-lime-500 font-mono px-3 text-sm w-2/12 text-center"
-                            : "text-red-500 font-mono px-3 text-sm w-2/12 text-center"
-                        }
-                      >
-                        {" "}
-                        {el.betProbability?.toFixed(0)}{" "}
-                      </span>
                       <span className="text-sky-500 font-mono px-3 text-sm w-2/12 text-center">
                         {" "}
                         {el.weight?.toFixed(0)}{" "}
                       </span>
                     </div>
-                    <div className="bg-slate-600 rounded-b-xl">
+                    {/* <div className="bg-slate-600 rounded-b-xl">
                       <div className="flex w-full">
                         <div className="text-slate-200 font-bold px-2 text-sm w-4/12">
                           прогноз
@@ -443,7 +356,7 @@ export const Predictions: React.FC = () => {
                           </div>
                         );
                       })}
-                    </div>
+                    </div> */}
                   </div>
                 );
               })}

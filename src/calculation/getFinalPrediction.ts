@@ -2,7 +2,6 @@ import { Bets } from "./calcMoncarlo";
 import { Odds } from "../types/odds";
 import { formatBets } from "./formatBets";
 import { isScoreMatchingPrediction } from "./isScoreMatchingPrediction";
-import { Predict } from "../types/predictions";
 import { Predictors } from "../types/predictors";
 
 interface Probabilites {
@@ -54,58 +53,32 @@ interface Score {
 function calculateBetMatchPercentage(
   bets: ResultObject[],
   scores: Score[],
-  predictions: Predict[] | undefined,
-  predictors: Predictors[] | undefined,
+  // predictions: Predict[] | undefined,
+  // predictors: Predictors[] | undefined,
   sportSlug: string
 ): Bet[] {
   return bets.map((bet) => {
     let weightedMatchingScores = 0;
     let totalWeight = 0;
-    let countMatchingScores = 0;
-    let total = 0;
-    let sumWeight = 0;
 
     let scoresArray;
 
     if (sportSlug === "soccer") {
-      scoresArray = scores.slice(0, 5);
+      scoresArray = scores
+        .slice(0, 10)
+        .sort((a, b) => b.probability - a.probability)
+        .slice(0, 5);
     } else if (sportSlug === "ice-hockey") {
-      scoresArray = scores.slice(0, 10);
+      scoresArray = scores
+        .slice(0, 20)
+        .sort((a, b) => b.probability - a.probability)
+        .slice(0, 10);
     } else {
-      scoresArray = scores.slice(0, 500);
+      scoresArray = scores
+        .slice(0, 1500)
+        .sort((a, b) => b.probability - a.probability)
+        .slice(0, 700);
     }
-
-    for (const score of scores) {
-      const [homeGoals, awayGoals] = score.score.split(":").map(Number);
-
-      if (
-        isScoreMatchingPrediction(bet.type, bet.outcome, homeGoals, awayGoals)
-      ) {
-        countMatchingScores += score.probability; // Учитываем совпадение с весом
-        sumWeight += score.quantity;
-      }
-
-      total += score.probability; // Суммируем общий вес
-    }
-
-    const betProbability = total > 0 ? (countMatchingScores / total) * 100 : 0;
-
-    const predictionsWithBet = predictions?.filter((p) => p.type === bet.type);
-    const predictionsInfo = predictionsWithBet
-      ?.map((el) => {
-        const predictor = predictors?.find(
-          (predictor) => predictor.id === el.predictor.predictorId
-        );
-        return {
-          ...el,
-          predictor,
-        };
-      })
-      .filter((el) => (el.predictor ? el.predictor?.roi : -11 > -10))
-      .sort((a, b) =>
-        b.predictor && a.predictor ? b.predictor?.roi - a.predictor?.roi : 0
-      )
-      .slice(0, 5);
 
     // Проверяем совпадение каждого score с bet и учитываем вес ( probability)
     for (const score of scoresArray) {
@@ -130,9 +103,7 @@ function calculateBetMatchPercentage(
       ...bet,
       percent: Math.round(percent),
       name: formatBets(bet),
-      predictions: predictionsInfo,
-      betProbability,
-      weight: sumWeight,
+      weight: weightedMatchingScores,
     };
   });
 }
@@ -171,9 +142,9 @@ export const getFinalPrediction = (
   data: Probabilites,
   odds: Odds | undefined,
   sportSlug: string,
-  value: number,
-  predictions: Predict[] | undefined,
-  predictors: Predictors[] | undefined
+  value: number
+  // predictions: Predict[] | undefined,
+  // predictors: Predictors[] | undefined
 ) => {
   // 1. Преобразование объекта в массив объектов для сортировки
   const resultsArray = Object.entries(data).map(([score, values]) => ({
@@ -186,16 +157,20 @@ export const getFinalPrediction = (
 
   const arrayOdds = convertObjectToArray(odds);
 
+  console.log(resultsArray);
+
   const result = calculateBetMatchPercentage(
     arrayOdds,
     resultsArray,
-    predictions,
-    predictors,
+    // predictions,
+    // predictors,
     sportSlug
   )
     .filter((el) => (el.value >= value && el.percent ? el.percent > 20 : false))
     .sort((a, b) => (a.percent && b.percent ? b.percent - a.percent : 0))
     .slice(0, 20);
+
+  console.log(result);
 
   function removeDuplicatesByType(arr: Bet[]) {
     const seenTypes = new Map();
@@ -214,7 +189,7 @@ export const getFinalPrediction = (
   const uniqueData = removeDuplicatesByType(result);
 
   return {
-    bets: uniqueData.slice(0, 5),
+    bets: uniqueData.slice(0, 2),
     // scores: resultsArray,
   };
 };

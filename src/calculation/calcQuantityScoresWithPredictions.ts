@@ -59,17 +59,17 @@ export const calcQuantityScoresWithPredictions = (
 
     // Общий коэффициент влияния
     const influenceFactor =
-      0.6 * normalizedROI + 0.4 * normalizedProfit + 0.6 * normalizedWinRate;
+      1.5 * normalizedROI + 1 * normalizedProfit + 1.8 * normalizedWinRate;
 
     for (const score in newProbabilities) {
       const { probability } = newProbabilities[score];
       const [homeGoals, awayGoals] = score.split(":").map(Number);
 
-      const adjustedProbability = influenceFactor;
+      const adjustedProbability = probability + influenceFactor;
 
       if (isScoreMatchingPrediction(type, outcome, homeGoals, awayGoals)) {
         // Увеличиваем вероятность для соответствующего счета
-        newProbabilities[score].quantity += probability * adjustedProbability;
+        newProbabilities[score].quantity += adjustedProbability;
       }
     }
   });

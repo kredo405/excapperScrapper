@@ -30,12 +30,12 @@ const Home: React.FC = () => {
         setIsLoading(true);
         const response = await apiService.getMatchesPrematch({
           limit: 150,
-          // dateFrom: getCurrentDate(),
-          // dateTo: getNextDate(),
-          dateFrom: "2025-01-19",
-          dateTo: "2025-01-19",
-          status: "ended",
-          // status: "upcoming",
+          dateFrom: getCurrentDate(),
+          dateTo: getNextDate(),
+          // dateFrom: "2025-01-23",
+          // dateTo: "2025-01-23",
+          // status: "ended",
+          status: "upcoming",
           sport: getSportQuery(sport),
         });
         console.log(response.matches.data);
@@ -68,11 +68,11 @@ const Home: React.FC = () => {
       ? filteredMatches.map((el, i) => {
           const matchElementsFiltered = el.matches.filter(
             (match) =>
-              (match.predictionStats.total >= 45 &&
+              (match.predictionStats.total >= 20 &&
                 match.sportSlug === "soccer") ||
-              (match.predictionStats.total >= 45 &&
+              (match.predictionStats.total >= 20 &&
                 match.sportSlug === "basketball") ||
-              (match.predictionStats.total >= 45 &&
+              (match.predictionStats.total >= 20 &&
                 match.sportSlug === "ice-hockey")
           );
 
@@ -150,7 +150,7 @@ export const getSportQuery = (sport: string | undefined): string => {
     case "hockey":
       return "sport=ice-hockey";
     default:
-      return "onlyTopLeagues=true";
+      return "sport=soccer";
   }
 };
 

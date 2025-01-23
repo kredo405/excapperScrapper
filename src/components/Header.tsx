@@ -17,11 +17,6 @@ const Header: React.FC = () => {
   // Список элементов навигации с типизацией
   const navigation: NavigationItem[] = [
     {
-      name: "Топ",
-      link: "/top",
-      logo: "https://img.icons8.com/?size=100&id=9ShNnttFUTZA&format=png&color=000000",
-    },
-    {
       name: "Футбол",
       link: "/football",
       logo: "https://img.icons8.com/?size=100&id=9820&format=png&color=209BFF",

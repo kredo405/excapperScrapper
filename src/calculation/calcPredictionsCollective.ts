@@ -60,42 +60,6 @@ export const calcPredictionsCollective = (
     100000
   );
 
-  const newPredictions = predictions?.map((el) => {
-    const desiredPredictor = predictors?.find(
-      (item) => item.id === el.predictor.predictorId
-    );
-
-    if (desiredPredictor) {
-      return {
-        ...el,
-        predictorInfo: desiredPredictor,
-      };
-    }
-  });
-
-  const newPredictionsFiltered = newPredictions
-    ?.filter(
-      (el) =>
-        el !== null && el !== undefined && el.predictorInfo.result >= 50000
-    )
-    .sort((a, b) =>
-      b?.predictorInfo && a?.predictorInfo
-        ? b?.predictorInfo.result - a?.predictorInfo.result
-        : 1
-    );
-
-  const predictionsWitchCategory: { [key: string]: any[] } = {};
-
-  newPredictionsFiltered?.forEach((el) => {
-    const outcomeKey = el?.type ? el.type : "";
-
-    if (predictionsWitchCategory.hasOwnProperty(outcomeKey)) {
-      predictionsWitchCategory[outcomeKey].push(el);
-    } else {
-      predictionsWitchCategory[outcomeKey] = [el];
-    }
-  });
-
   const scoresProbabilites = calcQuantityScoresWithPredictions(
     predictions,
     predictors,
@@ -108,9 +72,9 @@ export const calcPredictionsCollective = (
     scoresProbabilites,
     odds,
     sportSlug,
-    value,
-    predictions,
-    predictors
+    value
+    // predictions,
+    // predictors
   );
 
   console.log(result);
