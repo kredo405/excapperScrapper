@@ -8,7 +8,7 @@ import { Predict } from "../types/predictions";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 // import { Bets } from "../calculation/calcMoncarlo";
-import { formatBets } from "../calculation/formatBets";
+// import { formatBets } from "../calculation/formatBets";
 import { Bet } from "../calculation/getFinalPrediction";
 import { Match } from "../types/matches";
 import { Predictors } from "../types/predictors";
