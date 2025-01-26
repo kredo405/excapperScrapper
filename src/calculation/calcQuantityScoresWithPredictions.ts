@@ -59,7 +59,7 @@ export const calcQuantityScoresWithPredictions = (
 
     // Общий коэффициент влияния
     const influenceFactor =
-      1.5 * normalizedROI + 1 * normalizedProfit + 1.8 * normalizedWinRate;
+      1.5 * normalizedROI + 1.5 * normalizedProfit + 2 * normalizedWinRate;
 
     for (const score in newProbabilities) {
       const { probability } = newProbabilities[score];

@@ -65,19 +65,19 @@ function calculateBetMatchPercentage(
 
     if (sportSlug === "soccer") {
       scoresArray = scores
-        .slice(0, 10)
-        .sort((a, b) => b.probability - a.probability)
-        .slice(0, 5);
+        .slice(0, 8)
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 4);
     } else if (sportSlug === "ice-hockey") {
       scoresArray = scores
-        .slice(0, 20)
-        .sort((a, b) => b.probability - a.probability)
-        .slice(0, 10);
+        .slice(0, 13)
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 7);
     } else {
       scoresArray = scores
-        .slice(0, 1500)
-        .sort((a, b) => b.probability - a.probability)
-        .slice(0, 700);
+        .slice(0, 1000)
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 500);
     }
 
     // Проверяем совпадение каждого score с bet и учитываем вес ( probability)
@@ -153,7 +153,7 @@ export const getFinalPrediction = (
   }));
 
   // 2. Сортировка массива по quantity (убыванию)
-  resultsArray.sort((a, b) => b.quantity - a.quantity);
+  resultsArray.sort((a, b) => b.probability - a.probability);
 
   const arrayOdds = convertObjectToArray(odds);
 
@@ -189,7 +189,7 @@ export const getFinalPrediction = (
   const uniqueData = removeDuplicatesByType(result);
 
   return {
-    bets: uniqueData.slice(0, 2),
+    bets: uniqueData.slice(0, 4),
     // scores: resultsArray,
   };
 };
