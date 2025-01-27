@@ -41,12 +41,13 @@ export const PopularBets: React.FC<Props> = ({ predictions, predictors }) => {
       return {
         ...el,
         roi: desiredPredictor?.roi,
+        profit: desiredPredictor?.result,
         name: name?.shortName ? name?.shortName : "",
       };
     })
     .filter((el) => el.name !== "");
   const bestPredivtionsSorted = bestPredivtions
-    ?.sort((a, b) => (a.roi && b.roi ? b.roi - a.roi : 0))
+    ?.sort((a, b) => (a.profit && b.profit ? b.profit - a.profit : 0))
     .slice(0, 5);
 
   const popularBetsElements = bestPredivtionsSorted?.map((prediction, idx) => {
@@ -56,10 +57,15 @@ export const PopularBets: React.FC<Props> = ({ predictions, predictors }) => {
           key={idx}
           className="px-3 flex justify-between rounded-lg items-center font-mono mt-2 bg-slate-600 rounded-2xl bg-opacity-80 "
         >
-          <span className="text-slate-200 font-bold px-1 w-6/12">
+          <span className="text-slate-200 font-bold px-1 w-5/12">
             {prediction.name}
           </span>
           <span className="text-red-200 text-lg font-bold px-1 w-3/12 flex">
+            <span className="text-slate-200 px-2">
+              {prediction.profit ? prediction.profit.toFixed(0) : 0}
+            </span>
+          </span>
+          <span className="text-red-200 text-lg font-bold px-1 w-2/12 flex">
             <div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +85,7 @@ export const PopularBets: React.FC<Props> = ({ predictions, predictors }) => {
               {prediction.roi ? prediction.roi.toFixed(0) : 0}
             </span>
           </span>
-          <span className="text-red-200 text-lg font-bold px-1 w-3/12 flex">
+          <span className="text-red-200 text-lg font-bold px-1 w-2/12 flex">
             <div className="text-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -106,12 +112,13 @@ export const PopularBets: React.FC<Props> = ({ predictions, predictors }) => {
     <>
       <div className="mt-10 pb-10">
         <h2 className="font-mono text-xl text-center text-slate-200 font-bold">
-          Ставки с высоким ROI
+          Прогнозисты с высокой прибылью
         </h2>
         <div className="px-3 py-2 flex items-center text-slate-200 font-mono mt-2">
-          <span className="w-6/12">Ставка</span>
-          <span className="w-3/12">ROI</span>
-          <span className="w-3/12 ">Кэф</span>
+          <span className="w-5/12">Ставка</span>
+          <span className="w-3/12">Прибыль</span>
+          <span className="w-2/12">roi</span>
+          <span className="w-2/12 ">Кэф</span>
         </div>
         <div className="h-[40vh] overflow-y-scroll">{popularBetsElements}</div>
       </div>
