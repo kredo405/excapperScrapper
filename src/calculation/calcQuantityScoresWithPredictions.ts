@@ -21,7 +21,6 @@ export const calcQuantityScoresWithPredictions = (
   );
 
   // Нормализация значений
-
   function normalizeROI(roi: number): number {
     const sigmoid = (x: number) => 1 / (1 + Math.exp(-x));
 

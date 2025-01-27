@@ -13,7 +13,7 @@ import { Bet } from "../calculation/getFinalPrediction";
 import { Match } from "../types/matches";
 import { Predictors } from "../types/predictors";
 import { Odds } from "../types/odds";
-// import { calcPrediction } from "../calculation/calcPrediction";
+import { calcPrediction } from "../calculation/calcPrediction";
 import {
   collection,
   getDocs,
@@ -25,6 +25,14 @@ import { calcPredictionsCollective } from "../calculation/calcPredictionsCollect
 
 interface Result {
   bets: Bet[];
+}
+
+interface ResultPredict {
+  outcome: string;
+  type: string;
+  influenceFactor: number;
+  count: number;
+  odd: number;
 }
 
 // interface LastMatches {
@@ -41,6 +49,7 @@ export const Predictions: React.FC = () => {
   const [predictors, setPredictors] = useState<Predictors[]>();
   const [odds, setOdds] = useState<Odds>();
   const [result, setResult] = useState<Result>();
+  const [predictResult, setPredictResult] = useState<ResultPredict[]>();
   const [loadingCount, setLoadingCount] = useState(0);
   const [homeTeamLastMatches, setHomeTeamLastMatches] = useState<
     MatchWithOdds[] | undefined
@@ -65,16 +74,19 @@ export const Predictions: React.FC = () => {
   const sport = useSelector((state: RootState) => state.sport.currentSport);
 
   const onClickCalcPredictions = () => {
-    // const resTest = calcPrediction(
-    //   homeTeamLastMatches,
-    //   awayTeamLastMatches,
-    //   teamsData,
-    //   predictors,
-    //   predictions,
-    //   odds,
-    //   value
-    // );
+    const resTest = calcPrediction(
+      // homeTeamLastMatches,
+      // awayTeamLastMatches,
+      // teamsData,
+      predictors,
+      predictions
+      // odds,
+      // value
+    );
 
+    setPredictResult(resTest);
+
+    console.log(resTest);
     const res = calcPredictionsCollective(
       homeTeamLastMatches,
       awayTeamLastMatches,
@@ -293,73 +305,42 @@ export const Predictions: React.FC = () => {
                         {el.weight?.toFixed(0)}{" "}
                       </span>
                     </div>
-                    {/* <div className="bg-slate-600 rounded-b-xl">
-                      <div className="flex w-full">
-                        <div className="text-slate-200 font-bold px-2 text-sm w-4/12">
-                          прогноз
-                        </div>
-                        <div className="text-slate-200 font-bold px-2 text-center w-2/12">
-                          Roi
-                        </div>
-                        <div className="text-slate-200 font-bold px-2 text-center w-2/12">
-                          $
-                        </div>
-                        <div className="text-slate-200 font-bold px-2 text-center w-1/12">
-                          В
-                        </div>
-                        <div className="text-slate-200 font-bold px-2 text-center w-1/12">
-                          П
-                        </div>
-                        <div className="text-slate-200 font-bold px-2 text-center w-2/12">
-                          Место
-                        </div>
-                      </div>
-                      {el.predictions?.map((item) => {
-                        return (
-                          <div className="flex w-full border-t-2 border-slate-400 px-2 py-2">
-                            <div className="text-slate-100 px-2 text-sm w-4/12">
-                              {formatBets(item)?.name}
-                            </div>
-                            <div
-                              className={
-                                item.predictor && item.predictor?.roi > 0
-                                  ? "text-lime-400 px-2 text-center w-2/12 text-sm"
-                                  : "text-red-600 px-2 text-center w-2/12 text-sm"
-                              }
-                            >
-                              {item.predictor?.roi}
-                            </div>
-                            <div
-                              className={
-                                item.predictor && item.predictor?.result > 0
-                                  ? "text-lime-400 px-2 text-center w-2/12 text-sm"
-                                  : "text-red-600 px-2 text-center w-2/12 text-sm"
-                              }
-                            >
-                              {item.predictor?.result}
-                            </div>
-                            <div className="text-sky-400 px-2 text-center w-1/12 text-sm">
-                              {item.predictor?.won}
-                            </div>
-                            <div className="text-orange-400 px-2 text-center w-1/12 text-sm">
-                              {item.predictor?.lose}
-                            </div>
-                            <div
-                              className={
-                                item.predictor && item.predictor?.position < 500
-                                  ? "text-lime-300 px-2 text-center w-2/12 text-sm"
-                                  : "text-red-600 px-2 text-center w-2/12 text-sm"
-                              }
-                            >
-                              {item.predictor?.position}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div> */}
                   </div>
                 );
               })}
+              <div className="mt-10">
+                <h2 className="text-center font-bold text-xl font-mono text-slate-200">
+                  Дополнительно
+                </h2>
+                {predictResult?.map((el) => {
+                  return (
+                    <div className="flex justify-between rounded-b-xl items-center bg-slate-700 mt-2 px-2 py-5">
+                      <span className="text-slate-200 font-mono px-3 text-sm w-4/12">
+                        {" "}
+                        {el.type} {el.outcome}
+                      </span>
+                      <span className="text-orange-500 font-mono px-3 text-sm w-2/12 text-center">
+                        {" "}
+                        {el.odd}{" "}
+                      </span>
+                      <span
+                        className={
+                          el.influenceFactor && el.influenceFactor >= 2.4
+                            ? "text-lime-500 font-mono px-3 text-sm w-2/12 text-center"
+                            : "text-red-500 font-mono px-3 text-sm w-2/12 text-center"
+                        }
+                      >
+                        {" "}
+                        {el.influenceFactor.toFixed(1)}{" "}
+                      </span>
+                      <span className="text-sky-500 font-mono px-3 text-sm w-2/12 text-center">
+                        {" "}
+                        {el.count?.toFixed(0)}{" "}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
           <PopularBets predictions={predictions} predictors={predictors} />

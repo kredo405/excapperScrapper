@@ -189,7 +189,7 @@ export const getFinalPrediction = (
   const uniqueData = removeDuplicatesByType(result);
 
   return {
-    bets: uniqueData.slice(0, 4),
+    bets: uniqueData.slice(0, 3),
     // scores: resultsArray,
   };
 };
