@@ -143,7 +143,18 @@ export const calcPrediction = (
       combinedValue:
         item.influenceFactor * weightQuality + item.count * weightQuantity, // Взвешенная сумма
     }))
-    .sort((a, b) => b.combinedValue - a.combinedValue);
+    .sort((a, b) => b.combinedValue - a.combinedValue)
+    .filter((el) => {
+      const countPredictionsuccessful = el.prediction?.filter((item) =>
+        item.predictor ? item.predictor?.result > 0 : false
+      ).length;
+
+      if (countPredictionsuccessful && countPredictionsuccessful > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    });
 
   console.log(dataWithCombinedValue);
   return dataWithCombinedValue;

@@ -380,6 +380,12 @@ export const Predictions: React.FC = () => {
                                     {item.predictor?.roi}
                                   </span>
                                 </span>
+                                <span className="text-slate-100 font-mono px-3 text-[11px] text-slate-300">
+                                  Место{" "}
+                                  <span className="text-yellow-500">
+                                    {item.predictor?.position}
+                                  </span>
+                                </span>
                               </div>
                               <div>
                                 <p className="text-[12px] text-slate-100 p-2">
