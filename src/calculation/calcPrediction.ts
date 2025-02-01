@@ -1,5 +1,6 @@
 import { Predictors } from "../types/predictors";
 import { Predict } from "../types/predictions";
+import { formatBets } from "./formatBets";
 // import { Team } from "../types/statistics";
 // import { calcAvgGoals } from "./calcAvgGoals";
 // import { monteCarloScoreSimulation } from "./calcMoncarlo";
@@ -42,13 +43,23 @@ export const calcPrediction = (
   // const homeTeamName = teams.home.shortName;
   // const awayTeamName = teams.away.shortName;
 
-  const result: {
+  interface PredictionsInfo {
+    predictor: Predictors | undefined;
+    type: string;
+    outcome: string;
+    comment: string;
+    rate: number;
+  }
+
+  const resultPredictions: {
     [key: string]: {
       outcome: string;
       type: string;
       influenceFactor: number;
       count: number;
       odd: number;
+      name: { name: string; shortName: string } | undefined;
+      prediction: PredictionsInfo[] | undefined;
     };
   } = {};
 
@@ -70,33 +81,70 @@ export const calcPrediction = (
 
     // Общий коэффициент влияния
     const influenceFactor =
-      2.5 * normalizedROI + 2.5 * normalizedProfit + 2 * normalizedWinRate;
+      2 * normalizedROI + 3 * normalizedProfit + 2.5 * normalizedWinRate;
 
     const key = `${type}_${outcome}`;
 
-    if (result[key]) {
-      result[key].influenceFactor += influenceFactor;
-      result[key].count += 1;
+    if (resultPredictions[key]) {
+      resultPredictions[key].influenceFactor += influenceFactor;
+      resultPredictions[key].count += 1;
     } else {
-      result[key] = { outcome, type, influenceFactor, count: 1, odd: rate };
+      resultPredictions[key] = {
+        outcome,
+        type,
+        influenceFactor,
+        count: 1,
+        odd: rate,
+        name: formatBets(prediction),
+        prediction: predictions
+          ?.filter((el) => el.type === type && el.outcome === outcome)
+          .map((predict) => {
+            const predictor = predictors?.find(
+              (predictor) => predictor.id === predict.predictor.predictorId
+            );
+
+            return { ...predict, predictor };
+          })
+          .sort((a, b) =>
+            a.predictor && b.predictor
+              ? b.predictor?.result - a.predictor?.result
+              : 0
+          )
+          .filter((el) => (el.predictor ? el.predictor?.result > 0 : false))
+          .slice(0, 5),
+      };
     }
   });
 
-  const arrayPredictionsWithFactors = Object.entries(result)
+  const arrayPredictionsWithFactors = Object.entries(resultPredictions)
     .filter(([_, value]) => value.influenceFactor > 0)
     .sort((a, b) => b[1].influenceFactor - a[1].influenceFactor)
     .map(([_, value]) => ({ ...value }))
     .map((el) => {
-      if (el.count > 0) {
-        el.influenceFactor = el.influenceFactor / el.count;
-        return el;
-      } else {
-        return el;
-      }
+      // if (el.count > 0) {
+      //   el.influenceFactor = el.influenceFactor / el.count;
+      //   return el;
+      // } else {
+      //   return el;
+      // }
+
+      return el;
     })
     .sort((a, b) => b.influenceFactor - a.influenceFactor)
-    .filter((el) => el.count > 3 && el.odd > 1.65)
-    .slice(0, 7);
-  console.log(arrayPredictionsWithFactors);
-  return arrayPredictionsWithFactors;
+    .filter((el) => el.count > 3 && el.odd > 1.65 && el.name)
+    .slice(0, 20);
+
+  const weightQuality = 0.7; // Вес для influenceFactor
+  const weightQuantity = 0.3; // Вес для count
+
+  const dataWithCombinedValue = arrayPredictionsWithFactors
+    .map((item) => ({
+      ...item,
+      combinedValue:
+        item.influenceFactor * weightQuality + item.count * weightQuantity, // Взвешенная сумма
+    }))
+    .sort((a, b) => b.combinedValue - a.combinedValue);
+
+  console.log(dataWithCombinedValue);
+  return dataWithCombinedValue;
 };

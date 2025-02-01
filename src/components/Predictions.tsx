@@ -27,12 +27,22 @@ interface Result {
   bets: Bet[];
 }
 
+interface PredictionsInfo {
+  predictor: Predictors | undefined;
+  type: string;
+  outcome: string;
+  comment: string;
+  rate: number;
+}
+
 interface ResultPredict {
   outcome: string;
   type: string;
   influenceFactor: number;
   count: number;
   odd: number;
+  name: { name: string; shortName: string } | undefined;
+  prediction: PredictionsInfo[] | undefined;
 }
 
 // interface LastMatches {
@@ -264,23 +274,23 @@ export const Predictions: React.FC = () => {
 
           <div className="flex flex-col justify-center mt-10">
             <div>
+              <div className="flex items-center justify-between mt-2 p-2">
+                <span className="text-slate-300 font-mono font-bold px-3 w-4/12">
+                  Ставка
+                </span>
+                <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                  Кэф
+                </span>
+                <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                  Цен.
+                </span>
+                <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                  Вес
+                </span>
+              </div>
               {result?.bets.map((el) => {
                 return (
                   <div>
-                    <div className="flex items-center justify-between mt-2 p-2">
-                      <span className="text-slate-300 font-mono font-bold px-3 w-4/12">
-                        Ставка
-                      </span>
-                      <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
-                        Кэф
-                      </span>
-                      <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
-                        Цен.
-                      </span>
-                      <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
-                        Вес
-                      </span>
-                    </div>
                     <div className="flex justify-between rounded-b-xl items-center bg-slate-700 mt-2 px-2 py-5">
                       <span className="text-slate-200 font-mono px-3 text-sm w-4/12">
                         {" "}
@@ -312,31 +322,74 @@ export const Predictions: React.FC = () => {
                 <h2 className="text-center font-bold text-xl font-mono text-slate-200">
                   Дополнительно
                 </h2>
+                <div className="flex items-center justify-between mt-2 p-2">
+                  <span className="text-slate-300 font-mono font-bold px-3 w-4/12">
+                    Ставка
+                  </span>
+                  <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                    Кэф
+                  </span>
+                  <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                    Вес
+                  </span>
+                  <span className="text-slate-300 font-mono font-bold px-3 w-2/12 text-center">
+                    Кол-во
+                  </span>
+                </div>
                 {predictResult?.map((el) => {
                   return (
-                    <div className="flex justify-between rounded-b-xl items-center bg-slate-700 mt-2 px-2 py-5">
-                      <span className="text-slate-200 font-mono px-3 text-sm w-4/12">
-                        {" "}
-                        {el.type} {el.outcome}
-                      </span>
-                      <span className="text-orange-500 font-mono px-3 text-sm w-2/12 text-center">
-                        {" "}
-                        {el.odd}{" "}
-                      </span>
-                      <span
-                        className={
-                          el.influenceFactor && el.influenceFactor >= 2.4
-                            ? "text-lime-500 font-mono px-3 text-sm w-2/12 text-center"
-                            : "text-red-500 font-mono px-3 text-sm w-2/12 text-center"
-                        }
-                      >
-                        {" "}
-                        {el.influenceFactor.toFixed(1)}{" "}
-                      </span>
-                      <span className="text-sky-500 font-mono px-3 text-sm w-2/12 text-center">
-                        {" "}
-                        {el.count?.toFixed(0)}{" "}
-                      </span>
+                    <div>
+                      <div className="flex justify-between rounded-b-xl items-center bg-indigo-950 mt-2 px-2 py-5">
+                        <span className="text-slate-200 font-mono px-3 text-sm w-4/12">
+                          {" "}
+                          {el?.name?.name}
+                        </span>
+                        <span className="text-orange-500 font-mono px-3 text-sm w-2/12 text-center">
+                          {" "}
+                          {el.odd}{" "}
+                        </span>
+                        <span
+                          className={
+                            el.influenceFactor && el.influenceFactor >= 2.4
+                              ? "text-lime-500 font-mono px-3 text-sm w-2/12 text-center"
+                              : "text-red-500 font-mono px-3 text-sm w-2/12 text-center"
+                          }
+                        >
+                          {" "}
+                          {el.influenceFactor.toFixed(1)}{" "}
+                        </span>
+                        <span className="text-sky-500 font-mono px-3 text-sm w-2/12 text-center">
+                          {" "}
+                          {el.count?.toFixed(0)}{" "}
+                        </span>
+                      </div>
+                      <div>
+                        {el.prediction?.map((item) => {
+                          return (
+                            <div className="flex justify-between flex-col rounded-b-xl bg-teal-700 mt-[3px]">
+                              <div>
+                                <span className="text-slate-100 font-mono px-3 text-[11px] text-slate-300">
+                                  Прибыль:{" "}
+                                  <span className="text-yellow-500">
+                                    {item.predictor?.result}
+                                  </span>
+                                </span>
+                                <span className="text-slate-100 font-mono px-3 text-[11px] text-slate-300">
+                                  Roi{" "}
+                                  <span className="text-yellow-500">
+                                    {item.predictor?.roi}
+                                  </span>
+                                </span>
+                              </div>
+                              <div>
+                                <p className="text-[12px] text-slate-100 p-2">
+                                  {item.comment}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   );
                 })}

@@ -7,12 +7,14 @@ import { calcQuantityScoresWithPredictions } from "./calcQuantityScoresWithPredi
 import { getFinalPrediction } from "./getFinalPrediction";
 import { Match } from "../types/matches";
 import { Odds } from "../types/odds";
+import { Bets } from "./calcMoncarlo";
+// import { OddsItem } from "../types/odds";
 
 export function calcLimit(sportSlug: string) {
   if (sportSlug === "ice-Hockey") {
     return 10;
   } else if (sportSlug === "soccer") {
-    return 5;
+    return 4;
   } else if (sportSlug === "basketball") {
     return 140;
   }
@@ -60,13 +62,35 @@ export const calcPredictionsCollective = (
     100000
   );
 
+  let probability: {
+    [score: string]: {
+      probability: number;
+      quantity: number;
+      bets: Bets[];
+    };
+  } = {};
+
+  if (sportSlug !== "basketball") {
+    const correct_score = odds?.correct_score;
+
+    for (let score in correct_score) {
+      probability[score] = {
+        probability: 100 / correct_score[score].value,
+        quantity: 0,
+        bets: [],
+      };
+    }
+  } else {
+    probability = probabilitiesMain;
+  }
+
+  console.log(probability);
+
   const scoresProbabilites = calcQuantityScoresWithPredictions(
     predictions,
     predictors,
-    probabilitiesMain
+    probability
   );
-
-  console.log(probabilitiesMain);
 
   const result = getFinalPrediction(
     scoresProbabilites,

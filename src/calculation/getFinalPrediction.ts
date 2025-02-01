@@ -48,6 +48,7 @@ interface Score {
   score: string;
   probability: number;
   quantity: number;
+  percentage: number;
 }
 
 function calculateBetMatchPercentage(
@@ -65,20 +66,22 @@ function calculateBetMatchPercentage(
 
     if (sportSlug === "soccer") {
       scoresArray = scores
-        .slice(0, 8)
+        .slice(0, 10)
         .sort((a, b) => b.quantity - a.quantity)
-        .slice(0, 4);
+        .slice(0, 6);
     } else if (sportSlug === "ice-hockey") {
       scoresArray = scores
         .slice(0, 13)
         .sort((a, b) => b.quantity - a.quantity)
-        .slice(0, 7);
+        .slice(0, 9);
     } else {
       scoresArray = scores
         .slice(0, 1000)
         .sort((a, b) => b.quantity - a.quantity)
         .slice(0, 500);
     }
+
+    let prob = 0;
 
     // Проверяем совпадение каждого score с bet и учитываем вес ( probability)
     for (const score of scoresArray) {
@@ -89,6 +92,7 @@ function calculateBetMatchPercentage(
         isScoreMatchingPrediction(bet.type, bet.outcome, homeGoals, awayGoals)
       ) {
         weightedMatchingScores += weight; // Учитываем совпадение с весом
+        prob += score.percentage;
       }
 
       totalWeight += weight; // Суммируем общий вес
@@ -103,7 +107,7 @@ function calculateBetMatchPercentage(
       ...bet,
       percent: Math.round(percent),
       name: formatBets(bet),
-      weight: weightedMatchingScores,
+      weight: prob,
     };
   });
 }
@@ -152,16 +156,25 @@ export const getFinalPrediction = (
     ...values,
   }));
 
-  // 2. Сортировка массива по quantity (убыванию)
-  resultsArray.sort((a, b) => b.probability - a.probability);
-
   const arrayOdds = convertObjectToArray(odds);
 
-  console.log(resultsArray);
+  const totalQuantity = resultsArray.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
+  // Шаг 2: Рассчитываем процент для каждого счета
+  const dataWithPercentage = resultsArray
+    .map((item) => ({
+      ...item,
+      percentage: (item.quantity / totalQuantity) * 100,
+      res: ((item.quantity / totalQuantity) * 100 + item.probability) / 2,
+    }))
+    .sort((a, b) => b.probability - a.probability);
 
   const result = calculateBetMatchPercentage(
     arrayOdds,
-    resultsArray,
+    dataWithPercentage.slice(0, 10),
     // predictions,
     // predictors,
     sportSlug
@@ -189,7 +202,7 @@ export const getFinalPrediction = (
   const uniqueData = removeDuplicatesByType(result);
 
   return {
-    bets: uniqueData.slice(0, 3),
+    bets: uniqueData.slice(0, 4),
     // scores: resultsArray,
   };
 };

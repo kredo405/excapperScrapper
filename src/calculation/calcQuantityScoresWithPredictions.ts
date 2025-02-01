@@ -2,6 +2,13 @@ import { Predict } from "../types/predictions";
 import { Predictors } from "../types/predictors";
 import { Bets } from "./calcMoncarlo";
 import { isScoreMatchingPrediction } from "./isScoreMatchingPrediction";
+// import { Odds } from "../types/odds";
+
+// interface ScoreData {
+//   score: string;
+//   probability: number;
+//   quantity: number;
+// }
 
 export const calcQuantityScoresWithPredictions = (
   predictions: Predict[] | undefined,
@@ -19,6 +26,16 @@ export const calcQuantityScoresWithPredictions = (
       },
     ])
   );
+
+  const arrProbabilities = Object.entries(newProbabilities).map(
+    ([score, data]) => ({
+      score, // Добавляем счёт как отдельное поле
+      ...data, // Копируем остальные свойства
+      bets: JSON.parse(JSON.stringify(data.bets)), // Глубокое копирование bets
+    })
+  );
+
+  console.log(arrProbabilities);
 
   // Нормализация значений
   function normalizeROI(roi: number): number {
@@ -58,21 +75,31 @@ export const calcQuantityScoresWithPredictions = (
 
     // Общий коэффициент влияния
     const influenceFactor =
-      1.5 * normalizedROI + 1.5 * normalizedProfit + 2 * normalizedWinRate;
+      3 * normalizedROI + 6 * normalizedProfit + 4 * normalizedWinRate;
 
-    for (const score in newProbabilities) {
-      const { probability } = newProbabilities[score];
-      const [homeGoals, awayGoals] = score.split(":").map(Number);
+    arrProbabilities.forEach((el) => {
+      const probability = el.probability;
+      const [homeGoals, awayGoals] = el.score.split(":").map(Number);
 
-      const adjustedProbability = probability + influenceFactor;
+      const adjustedProbability = probability * influenceFactor;
 
       if (isScoreMatchingPrediction(type, outcome, homeGoals, awayGoals)) {
-        // Увеличиваем вероятность для соответствующего счета
-        newProbabilities[score].quantity += adjustedProbability;
+        el.quantity += adjustedProbability;
       }
-    }
+    });
   });
 
-  console.log(newProbabilities);
-  return newProbabilities;
+  const probabilitiesObject = Object.fromEntries(
+    arrProbabilities.map((item) => [
+      item.score, // Ключ (счёт)
+      {
+        probability: item.probability,
+        quantity: item.quantity,
+        bets: JSON.parse(JSON.stringify(item.bets)), // Глубокая копия
+      },
+    ])
+  );
+
+  console.log(probabilitiesObject);
+  return probabilitiesObject;
 };
