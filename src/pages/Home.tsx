@@ -32,9 +32,6 @@ const Home: React.FC = () => {
           limit: 150,
           dateFrom: getCurrentDate(),
           dateTo: getNextDate(),
-          // dateFrom: "2025-01-30",
-          // dateTo: "2025-01-30",
-          // status: "ended",
           status: "upcoming",
           sport: getSportQuery(sport),
         });

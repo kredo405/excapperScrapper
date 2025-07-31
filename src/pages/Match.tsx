@@ -84,10 +84,6 @@ const Match: React.FC = () => {
           {/* Рендер команд */}
           <div className="flex items-center justify-between">
             {statistics && renderTeamLogo(statistics.teams.home)}
-            {/* <img
-              src="https://img.icons8.com/?size=100&id=MFUoiKPaq30B&format=png&color=756646"
-              alt="versus"
-            /> */}
             <span className="text-slate-300 text-2xl font-bold">:</span>
             {statistics && renderTeamLogo(statistics.teams.away)}
           </div>

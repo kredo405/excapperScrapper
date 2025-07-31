@@ -1,14 +1,6 @@
 import { Predictors } from "../types/predictors";
 import { Predict } from "../types/predictions";
 import { formatBets } from "./formatBets";
-// import { Team } from "../types/statistics";
-// import { calcAvgGoals } from "./calcAvgGoals";
-// import { monteCarloScoreSimulation } from "./calcMoncarlo";
-// import { calcQuantityScoresWithPredictions } from "./calcQuantityScoresWithPredictions";
-// // import { getFinalPrediction } from "./getFinalPrediction";
-// import { Match } from "../types/matches";
-// import { Odds } from "../types/odds";
-// import { count } from "firebase/firestore";
 
 function normalizeROI(roi: number): number {
   const sigmoid = (x: number) => 1 / (1 + Math.exp(-x));
@@ -30,18 +22,9 @@ const normalizeProfit = (value: number): number => {
 };
 
 export const calcPrediction = (
-  // matchesHome: Match[] | undefined,
-  // matchesAway: Match[] | undefined,
-  // teams: { home: Team; away: Team },
   predictors: Predictors[] | undefined,
   predictions: Predict[] | undefined
-  // odds: Odds | undefined,
-  // value: number
 ) => {
-  // const sportSlug = matchesHome ? matchesHome[0].sportSlug : "";
-
-  // const homeTeamName = teams.home.shortName;
-  // const awayTeamName = teams.away.shortName;
 
   interface PredictionsInfo {
     predictor: Predictors | undefined;
@@ -121,12 +104,6 @@ export const calcPrediction = (
     .sort((a, b) => b[1].influenceFactor - a[1].influenceFactor)
     .map(([_, value]) => ({ ...value }))
     .map((el) => {
-      // if (el.count > 0) {
-      //   el.influenceFactor = el.influenceFactor / el.count;
-      //   return el;
-      // } else {
-      //   return el;
-      // }
 
       return el;
     })

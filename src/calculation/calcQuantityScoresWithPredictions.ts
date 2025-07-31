@@ -2,13 +2,6 @@ import { Predict } from "../types/predictions";
 import { Predictors } from "../types/predictors";
 import { Bets } from "./calcMoncarlo";
 import { isScoreMatchingPrediction } from "./isScoreMatchingPrediction";
-// import { Odds } from "../types/odds";
-
-// interface ScoreData {
-//   score: string;
-//   probability: number;
-//   quantity: number;
-// }
 
 export const calcQuantityScoresWithPredictions = (
   predictions: Predict[] | undefined,

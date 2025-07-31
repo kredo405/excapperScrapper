@@ -54,8 +54,6 @@ interface Score {
 function calculateBetMatchPercentage(
   bets: ResultObject[],
   scores: Score[],
-  // predictions: Predict[] | undefined,
-  // predictors: Predictors[] | undefined,
   sportSlug: string
 ): Bet[] {
   return bets.map((bet) => {
@@ -147,8 +145,6 @@ export const getFinalPrediction = (
   odds: Odds | undefined,
   sportSlug: string,
   value: number
-  // predictions: Predict[] | undefined,
-  // predictors: Predictors[] | undefined
 ) => {
   // 1. Преобразование объекта в массив объектов для сортировки
   const resultsArray = Object.entries(data).map(([score, values]) => ({

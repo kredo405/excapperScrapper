@@ -7,8 +7,6 @@ import { useParams } from "react-router-dom";
 import { Predict } from "../types/predictions";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-// import { Bets } from "../calculation/calcMoncarlo";
-// import { formatBets } from "../calculation/formatBets";
 import { Bet } from "../calculation/getFinalPrediction";
 import { Match } from "../types/matches";
 import { Predictors } from "../types/predictors";
@@ -45,11 +43,6 @@ interface ResultPredict {
   prediction: PredictionsInfo[] | undefined;
 }
 
-// interface LastMatches {
-//   match: Match[] | undefined;
-//   odds: Odds[] | undefined;
-// }
-
 type MatchWithOdds = Match & { odds?: Odds };
 
 export const Predictions: React.FC = () => {
@@ -73,10 +66,6 @@ export const Predictions: React.FC = () => {
     setValue(parseFloat(e.target.value));
   };
 
-  // const lastMatchesData = useSelector(
-  //   (state: RootState) => state.statistics.statistics.matches
-  // );
-
   const teamsData = useSelector(
     (state: RootState) => state.statistics.statistics.teams
   );
@@ -85,13 +74,8 @@ export const Predictions: React.FC = () => {
 
   const onClickCalcPredictions = () => {
     const resTest = calcPrediction(
-      // homeTeamLastMatches,
-      // awayTeamLastMatches,
-      // teamsData,
       predictors,
       predictions
-      // odds,
-      // value
     );
 
     setPredictResult(resTest);
