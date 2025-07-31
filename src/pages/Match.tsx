@@ -57,50 +57,75 @@ const Match: React.FC = () => {
 
   // Рендер логотипов
   const renderTeamLogo = (team: Team) => (
-    <div className="flex items-center justify-center flex-col mx-3 w-[160px]">
-      <img
-        className="w-[80px] h-[80px]"
-        src={`https://cdn.stavka.tv${team.logo}`}
-        alt={`${team.shortName} logo`}
-      />
+    <div className="flex flex-col items-center mx-3 w-24 md:w-32 transition-all duration-300 hover:scale-105">
+      <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-full p-2 shadow-lg border border-slate-700">
+        <img
+          className="w-14 h-14 md:w-20 md:h-20 object-contain"
+          src={`https://cdn.stavka.tv${team.logo}`}
+          alt={`${team.shortName} logo`}
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/default-logo.png';
+          }}
+        />
+      </div>
       <div className="flex items-center gap-2 mt-3">
         <img
-          className="w-3 h-3"
+          className="w-4 h-4 object-contain"
           src={`https://cdn.stavka.tv${team.country.logo}`}
-          alt={`${team.shortName} flag`}
+          alt={`${team.country.name} flag`}
         />
-        <span className="font-semibold text-slate-200">{team.shortName}</span>
+        <span className="font-bold text-slate-100 text-sm md:text-base truncate max-w-[100px]">
+          {team.shortName}
+        </span>
       </div>
     </div>
   );
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       <Header />
+      
       {isLoading ? (
-        <Loading />
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loading />
+        </div>
       ) : (
-        <div className="mt-10">
-          {/* Рендер команд */}
-          <div className="flex items-center justify-between">
-            {statistics && renderTeamLogo(statistics.teams.home)}
-            <span className="text-slate-300 text-2xl font-bold">:</span>
-            {statistics && renderTeamLogo(statistics.teams.away)}
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          {/* Заголовок матча */}
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 shadow-xl">
+            <div className="flex flex-col items-center">
+              <div className="text-slate-400 text-sm mb-4">ПРЕДСТОЯЩИЙ МАТЧ</div>
+              
+              <div className="flex items-center justify-between w-full max-w-md">
+                {statistics && renderTeamLogo(statistics.teams.home)}
+                
+                <div className="flex flex-col items-center">
+                  <div className="text-2xl md:text-4xl font-bold text-slate-300 mb-1">
+                    VS
+                  </div>
+                </div>
+                
+                {statistics && renderTeamLogo(statistics.teams.away)}
+              </div>
+            </div>
           </div>
 
           {/* Навигация */}
-          <div className="mt-10 w-full">
-            <nav className="flex items-center justify-center">
-              <ul className="flex items-center gap-4 px-2">
+          <div className="mt-8">
+            <nav className="flex justify-center">
+              <ul className="flex bg-slate-700/50 backdrop-blur rounded-xl p-1 border border-slate-600/50 shadow-md">
                 {["", "statistics", "predictions"].map((path) => (
                   <li key={path}>
                     <Link
                       to={path}
-                      className={`font-semibold px-5 py-3 rounded-lg ${
-                        currentLink === path
-                          ? "bg-slate-700 text-slate-200 hover:bg-slate-600"
-                          : "bg-slate-600 text-slate-100 hover:bg-slate-500"
-                      }`}
+                      className={`
+                        font-medium px-5 py-3 rounded-lg text-sm md:text-base transition-all duration-200
+                        ${
+                          currentLink === path
+                            ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-blue-500/20 shadow-lg"
+                            : "text-slate-300 hover:bg-slate-600/50"
+                        }
+                      `}
                     >
                       {path === ""
                         ? "Обзор"
@@ -112,11 +137,14 @@ const Match: React.FC = () => {
                 ))}
               </ul>
             </nav>
-            <Outlet />
+            
+            <div className="mt-6 bg-slate-800/30 backdrop-blur rounded-2xl p-4 md:p-6 border border-slate-700/50 shadow-lg">
+              <Outlet />
+            </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
